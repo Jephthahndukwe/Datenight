@@ -1,8 +1,8 @@
 # Una Cena Per Due
 
-A one-page, scroll-driven dinner invitation. Candlelit trattoria on the Amalfi Coast, a low-poly terrace at dusk, a parchment menu that lists the plan, and one question with two ways to say yes.
+A one-page, scroll-driven dinner invitation in the spirit of a luxury Italian restaurant site: a candlelit table with a slow push-in, a layered parallax scene over the Amalfi Coast, a parchment menu that tilts and turns, and one question with two ways to say yes.
 
-Vite + React + TypeScript, Tailwind, React Three Fiber + drei, Framer Motion, Lenis. Static site on Vercel, plus one optional serverless function.
+Vite + React + TypeScript, Tailwind, Framer Motion, Lenis. Real photography, graded as one film, with all depth coming from motion and layering. Static site on Vercel, plus one optional serverless function.
 
 ## 1. Make it yours (one file)
 
@@ -34,16 +34,36 @@ npm run dev        # http://localhost:5173
 npm run build && npm run preview
 ```
 
-Handy URL flags while testing:
+Handy URL flag while testing:
 
 - `?reset` forgets a saved answer (the page remembers her answer in `localStorage`, so a refresh shows the confirmation instead of asking again)
-- `?3d=0` forces the static fallback art, `?3d=1` forces 3D
 
-## 3. Music
+## 3. Photography
+
+Six Unsplash photos live in `public/img/` as WebP at 640 and 1200 px wide (23 to 156 KB each), so phones never download the large size. They all go through one warm grade (burgundy shadows, golden highlights, a breath of film grain) so they read as a single film.
+
+To swap a photo, change its `photo` id in `scripts/images.json` (the part of the Unsplash image URL after `images.unsplash.com/`), then:
+
+```bash
+npm run images
+```
+
+Credits are listed in `photoCredits` in `site.ts` and shown as a small line at the bottom of the page.
+
+## 4. Motion, at a glance
+
+- **Hero:** Ken Burns push-in, name revealed letter by letter, soft CSS bokeh, text drifting away on scroll
+- **Mood:** four parallax layers (coast, arch photo, text, near lemons) at different speeds, lines sliding and fading with scroll
+- **Menu:** CSS 3D flip, slow scroll tilt, plus phone-orientation tilt. On iOS the motion permission is requested from the first tap on the card; if it is declined or unsupported the card keeps its scroll and hover tilt
+- **Question:** the page dims to candlelight, equal glowing pulses on both buttons
+- **Yes:** a short canvas rose-petal burst, then the details card rises in
+- `prefers-reduced-motion`: smooth scroll, parallax, Ken Burns, bokeh, pulses and petals are all switched off; content simply appears
+
+## 5. Music
 
 `public/audio/cena.mp3` is a short loop of a fingerpicked guitar progression, synthesised by `scripts/make-music.mjs` (`npm run music`, needs ffmpeg). It is original, so there is nothing to license. Replace it with any royalty-free track by dropping a file at the same path (or change `music.src`). It is off by default and only starts after she taps the toggle.
 
-## 4. Optional: email when she answers (Resend)
+## 6. Optional: email when she answers (Resend)
 
 `api/notify.ts` is a tiny Vercel function that calls Resend. Set these in **Vercel → Project → Settings → Environment Variables**:
 
@@ -55,7 +75,7 @@ Handy URL flags while testing:
 
 Disable it any time: set `notify.enabled: false` in `site.ts` (the page never calls the endpoint) or leave the env vars unset (the function returns 204 and does nothing).
 
-## 5. Deploy to Vercel
+## 7. Deploy to Vercel
 
 **Git route (recommended)**
 
@@ -81,16 +101,15 @@ src/
   config/site.ts          every personal detail
   components/
     sections/             Opening, Mood, Menu, Question
-    three/                Candle, Flame, TerraceScene, PetalBurst ... (lazy-loaded)
-    ui/                   Overlays (grain, vignette), MusicToggle, fallbacks
-  lib/                    capabilities, ics, share, music, storage, hooks
+    ui/                   Picture, Bokeh, LineArt, Overlays, MusicToggle, Ornament
+  lib/                    ics, share, music, storage, petals (canvas), useTilt, hooks
+public/img/               graded WebP photos (generated)
 api/notify.ts             optional Resend email
-scripts/                  make-og.mjs, make-music.mjs
+scripts/                  make-images.mjs, make-og.mjs, make-music.mjs
 ```
 
 ## Performance notes
 
-- The 3D chunk (three + R3F, about 240 kB gzipped) is not loaded until her first tap or scroll, or 8 seconds after load. First paint is plain HTML, CSS and a CSS candle.
-- Pixel ratio is capped at 1.5, drops to 1 if frame rate sags. Geometry is low-poly with baked-style lighting, one draw call for all glows.
-- No WebGL, a low-memory or data-saver device, or `?3d=0`: illustrated static art instead of 3D, DOM petals instead of the WebGL burst.
-- `prefers-reduced-motion`: smooth scrolling off, 3D renders a still frame, no petals.
+- No 3D, no WebGL. First paint is HTML, CSS and one preloaded 23 KB hero WebP. Lighthouse mobile (simulated 4G) measured performance 98, LCP 0.8 s, TBT about 100 ms.
+- Every moving thing is transform or opacity, so it stays on the compositor. Bokeh and the Ken Burns are pure CSS; the petal burst is a single canvas that removes itself after about 6 seconds.
+- Images carry explicit width and height, are lazy-loaded below the fold, and use `srcset` so phones fetch the 640 px file.

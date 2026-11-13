@@ -30,7 +30,7 @@ export const site = {
     address: '12 Via Roma, Your City',
   },
 
-  /** Sincere lines shown over the terrace scene while she scrolls. Two or three is the sweet spot. */
+  /** Sincere lines shown over the coast scene while she scrolls. Two or three is the sweet spot. */
   whyLines: [
     'You make ordinary evenings feel like they have candles in them.',
     'I would like one long dinner where neither of us checks the time.',
@@ -85,6 +85,15 @@ export const site = {
     src: '/audio/cena.mp3',
     volume: 0.4,
   },
+
+  /** Photographers behind the images in /public/img (see scripts/images.json). Shown as a small credit line. */
+  photoCredits: [
+    { name: 'Alexandra Marta', url: 'https://unsplash.com/photos/fNyunAZExdA' },
+    { name: 'Reiseuhu', url: 'https://unsplash.com/photos/Qw-K23N1V4s' },
+    { name: 'Yimeng Zhao', url: 'https://unsplash.com/photos/O0toycp-Vd0' },
+    { name: 'Lory', url: 'https://unsplash.com/photos/Gq1AP5CuCys' },
+    { name: 'Zac Cain', url: 'https://unsplash.com/photos/HCFqhYC_Hvw' },
+  ],
 
   /** Used for og:url / og:image if Vercel's production URL is not available at build. */
   siteUrl: 'https://your-site.vercel.app',

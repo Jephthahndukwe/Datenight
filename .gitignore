@@ -6,3 +6,4 @@ dist
 *.log
 .scratch
 scripts/.og.html
+scripts/.cache

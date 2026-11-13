@@ -42,38 +42,66 @@ body {
 button { font: inherit; -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 999px; }
 
-/* ---------- film grain + vignette (fixed, GPU-only) ---------- */
-.grain {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 60;
-  background-size: 160px 160px;
-}
+/* ---------- vignette ---------- */
 .vignette {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 55;
-  background: radial-gradient(ellipse at 50% 45%, transparent 48%, rgba(10, 2, 6, 0.55) 100%);
+  background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(10, 2, 6, 0.5) 100%);
 }
 
-/* ---------- CSS candle (loading + no-WebGL fallback) ---------- */
-.flame {
-  transform-origin: 50% 90%;
-  animation: flicker 2.4s ease-in-out infinite;
+/* ---------- slow cinematic motion (transform / opacity only) ---------- */
+.kenburns { animation: kb 30s ease-in-out infinite alternate; will-change: transform; transform-origin: 40% 40%; }
+@keyframes kb {
+  from { transform: scale(1.04) translate3d(0, 0, 0); }
+  to { transform: scale(1.17) translate3d(-2.2%, -1.6%, 0); }
 }
-@keyframes flicker {
-  0%, 100% { transform: scale(1, 1) rotate(0deg); }
-  18% { transform: scale(0.96, 1.05) rotate(-1.2deg); }
-  37% { transform: scale(1.03, 0.96) rotate(0.8deg); }
-  58% { transform: scale(0.98, 1.06) rotate(-0.6deg); }
-  79% { transform: scale(1.02, 0.98) rotate(1deg); }
+.fade-from-black { animation: fromBlack 2.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both; }
+@keyframes fromBlack { from { opacity: 1; } to { opacity: 0; } }
+
+.bokeh { animation: drift 22s ease-in-out infinite alternate; will-change: transform; }
+@keyframes drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(14px, -26px, 0) scale(1.08); }
+  100% { transform: translate3d(-10px, -50px, 0) scale(0.95); }
 }
-.glow-breathe { animation: breathe 3.2s ease-in-out infinite; }
-@keyframes breathe {
-  0%, 100% { opacity: 0.92; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.04); }
+
+/* soft candlelight breathing behind the question */
+.candle-glow { animation: glowBreathe 5.5s ease-in-out infinite; will-change: opacity, transform; }
+@keyframes glowBreathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  35% { opacity: 1; transform: scale(1.03); }
+  60% { opacity: 0.9; transform: scale(0.99); }
+}
+
+/* the two yes buttons: a slow, equal, out-of-phase glow */
+.btn-pulse { position: relative; isolation: isolate; }
+.btn-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  box-shadow: 0 0 34px 8px rgba(236, 189, 98, 0.65);
+  opacity: 0.25;
+  animation: pulse 3.8s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+.btn-pulse.offset::after { animation-delay: -1.9s; }
+@keyframes pulse {
+  0%, 100% { opacity: 0.22; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.06); }
+}
+
+/* three petals that drift very slowly behind the question */
+.petal-idle { animation: petalFall linear infinite; will-change: transform; }
+@keyframes petalFall {
+  0% { transform: translate3d(0, -12vh, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  50% { transform: translate3d(34px, 50vh, 0) rotate(160deg); }
+  90% { opacity: 0.7; }
+  100% { transform: translate3d(-20px, 112vh, 0) rotate(330deg); opacity: 0; }
 }
 
 /* long-press must never open the iOS/Android callout on the answer buttons */
@@ -90,5 +118,6 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flame, .glow-breathe { animation: none; }
+  .kenburns, .bokeh, .candle-glow, .btn-pulse::after, .petal-idle { animation: none !important; }
+  .fade-from-black { animation-duration: 0.01s; }
 }

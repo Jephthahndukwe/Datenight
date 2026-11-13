@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
-import { m } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { m, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
 import { site, derived } from '../../config/site';
 import { useInView } from '../../lib/useInView';
+import { useOrientationTilt } from '../../lib/useTilt';
 import { Ornament } from '../ui/Ornament';
+import { Picture } from '../ui/Picture';
 
-type Props = { reducedMotion: boolean };
+type Props = { reducedMotion: boolean; coarse: boolean };
 
 const courses = [
   { name: 'Antipasto', label: 'Quando', value: `${derived.dateLong}, ${derived.time}` },
@@ -14,10 +16,29 @@ const courses = [
 ];
 
 /** 3. A parchment trattoria menu that turns over in 3D. The "dishes" are the plan. */
-export function Menu({ reducedMotion }: Props) {
+export function Menu({ reducedMotion, coarse }: Props) {
   const [ref, inView] = useInView<HTMLDivElement>('0px 0px -22% 0px');
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
+  const section = useRef<HTMLElement>(null);
+
+  // Tilt = slow scroll tilt (always) + phone orientation (touch devices) + pointer hover (mouse).
+  // If orientation permission is denied or unsupported, the other two simply carry on.
+  const { scrollYProgress } = useScroll({ target: section, offset: ['start end', 'end start'] });
+  const scrollTiltX = useTransform(scrollYProgress, [0, 0.5, 1], [9, 0, -9]);
+  const orient = useOrientationTilt(coarse && !reducedMotion);
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const hx = useSpring(px, { stiffness: 50, damping: 20 });
+  const hy = useSpring(py, { stiffness: 50, damping: 20 });
+  const tiltX = useTransform([scrollTiltX, orient.x, hy], ([a, b, c]: number[]) => a + b + c);
+  const tiltY = useTransform([orient.y, hx], ([a, b]: number[]) => a + b);
+  const onPointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (reducedMotion) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    px.set(((e.clientX - r.left) / r.width - 0.5) * 12);
+    py.set(-((e.clientY - r.top) / r.height - 0.5) * 8);
+  };
 
   // turn the card once, a beat after it settles into view; after that she controls it
   useEffect(() => {
@@ -27,16 +48,21 @@ export function Menu({ reducedMotion }: Props) {
   }, [inView, touched, reducedMotion]);
 
   const flip = () => {
+    void orient.request(); // iOS only asks for motion access from a tap
     setTouched(true);
     setOpen((o) => !o);
   };
 
   return (
-    <section id="menu" className="relative flex min-h-[100svh] w-full flex-col items-center justify-center overflow-hidden px-4 pb-32 pt-24">
-      <div aria-hidden className="absolute inset-0" style={{ background: 'radial-gradient(70% 55% at 50% 48%, #3a0f20 0%, #1d0710 60%, #12040a 100%)' }} />
-      <p className="relative mb-7 text-center text-[10px] uppercase tracking-[0.42em] text-gold-400/80">III &nbsp;·&nbsp; Il menù</p>
+    <section ref={section} id="menu" onPointerMove={onPointerMove} className="relative flex min-h-[100svh] w-full flex-col items-center justify-center overflow-hidden px-4 pb-28 pt-24">
+      <div aria-hidden className="absolute inset-0 bg-wine-950" />
+      <Picture name="candles" width={640} height={960} alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.3]" />
+      <div aria-hidden className="absolute inset-0" style={{ background: 'radial-gradient(70% 55% at 50% 48%, rgba(58,15,32,0.55) 0%, rgba(29,7,16,0.82) 62%, #12040a 100%)' }} />
+      <p className="relative text-center text-[10px] uppercase tracking-[0.42em] text-gold-300/80">III &nbsp;·&nbsp; Il menù</p>
+      <p className="relative mb-6 mt-2 text-center font-display text-base italic text-cream-200/55">Tap to turn the card{coarse ? ', tilt your phone' : ''}</p>
 
       <div ref={ref} className="relative [perspective:1400px]">
+        <m.div style={reducedMotion ? undefined : { rotateX: tiltX, rotateY: tiltY }} className="[transform-style:preserve-3d]">
         <m.div
           role="button"
           tabIndex={0}
@@ -47,7 +73,7 @@ export function Menu({ reducedMotion }: Props) {
           animate={{ rotateY: open ? 180 : 0 }}
           transition={{ duration: reducedMotion ? 0.01 : 1.7, ease: [0.65, 0, 0.25, 1] }}
           className="no-callout relative block cursor-pointer text-left [transform-style:preserve-3d]"
-          style={{ width: 'min(86vw, 400px, calc(72svh * 0.625))', aspectRatio: '5 / 8' }}
+          style={{ width: 'min(86vw, 400px, calc(70svh * 0.585))', aspectRatio: '5 / 8.5' }}
         >
           {/* shadow that tracks the turn */}
           <m.span
@@ -101,6 +127,7 @@ export function Menu({ reducedMotion }: Props) {
               <p className="-rotate-2 font-script text-wine-600" style={{ fontSize: '6.6cqw', lineHeight: 1 }}>{site.menu.note}</p>
             </div>
           </div>
+        </m.div>
         </m.div>
       </div>
     </section>
