@@ -67,6 +67,13 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   100% { transform: translate3d(-10px, -50px, 0) scale(0.95); }
 }
 
+/* "my queen": a quiet candlelit glow */
+.queen-glow { animation: queenGlow 5s ease-in-out infinite; text-shadow: 0 0 18px rgba(255, 190, 100, 0.55), 0 0 44px rgba(255, 150, 60, 0.35); }
+@keyframes queenGlow {
+  0%, 100% { text-shadow: 0 0 14px rgba(255, 190, 100, 0.45), 0 0 38px rgba(255, 150, 60, 0.28); }
+  50% { text-shadow: 0 0 22px rgba(255, 200, 120, 0.7), 0 0 54px rgba(255, 150, 60, 0.42); }
+}
+
 /* soft candlelight breathing behind the question */
 .candle-glow { animation: glowBreathe 5.5s ease-in-out infinite; will-change: opacity, transform; }
 @keyframes glowBreathe {
@@ -118,6 +125,6 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kenburns, .bokeh, .candle-glow, .btn-pulse::after, .petal-idle { animation: none !important; }
+  .kenburns, .bokeh, .candle-glow, .queen-glow, .btn-pulse::after, .petal-idle { animation: none !important; }
   .fade-from-black { animation-duration: 0.01s; }
 }

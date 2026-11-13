@@ -12,7 +12,7 @@ export type Choice = 'yes' | 'obviously';
 
 export const site = {
   /** Her name, in the script font. */
-  herName: 'Darling',
+  herName: 'Naomi',
 
   /** Your first name. Used in "Tell {yourName}" and the calendar event. */
   yourName: 'Your Name',
@@ -37,8 +37,11 @@ export const site = {
   hero: {
     /** Shown above her name, in script. Try "Hi," or "Hey" or "Well, hello,". */
     greeting: 'Hey,',
+    /** Your pet name for her. Fades in under her name, softly glowing. Set to '' to leave it out. */
+    nickname: 'my queen',
+    /** A tiny gold line-art crown above the nickname. Set false if it ever feels like too much. */
+    crown: true,
     tagline: 'I have something to ask you.',
-    scrollHint: 'Scroll',
   },
 
   /** Your words, one per screen while she scrolls. Two to four is the sweet spot. */
@@ -70,7 +73,7 @@ export const site = {
 
   /** The big question. */
   question: {
-    headline: 'Will you have dinner with me?',
+    headline: 'My queen, will you have dinner with me?',
     yesPrimary: 'Yes',
     yesSecondary: 'Obviously yes',
     underline: 'I made this easy for you.',
@@ -79,8 +82,8 @@ export const site = {
 
   /** Thank-you line shown depending on which button she tapped. */
   thanks: {
-    yes: 'Perfect. It’s a date.',
-    obviously: 'I knew you had great taste.',
+    yes: 'Perfect. It’s a date, my queen.',
+    obviously: 'I knew you had great taste, my queen.',
   } satisfies Record<Choice, string>,
 
   /** Labels on the confirmation card. {you} is replaced with yourName. */

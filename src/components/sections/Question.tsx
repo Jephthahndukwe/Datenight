@@ -90,7 +90,7 @@ export function Question({ tier }: { tier: Tier }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.5 }}
                 transition={{ duration: 1.8, delay: 0.5, ease: slow }}
-                className="font-display text-[clamp(40px,11.5vw,78px)] font-medium leading-[1.04] text-cream-50 [text-shadow:0_2px_40px_rgba(18,4,10,0.8)]"
+                className="font-display text-[clamp(38px,10.6vw,76px)] font-medium leading-[1.06] [text-wrap:balance] text-cream-50 [text-shadow:0_2px_40px_rgba(18,4,10,0.8)]"
               >
                 {site.question.headline}
               </m.h2>
