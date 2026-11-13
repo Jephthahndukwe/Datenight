@@ -38,7 +38,6 @@ export function buildIcs(): string {
     `DTSTART:${fmtLocal(start)}`,
     `DTEND:${fmtLocal(end)}`,
     `SUMMARY:${esc(fill(site.calendar.title))}`,
-    `LOCATION:${esc(`${site.restaurant.name}, ${site.restaurant.area}, ${site.restaurant.address}`)}`,
     `DESCRIPTION:${esc(fill(site.calendar.description))}`,
     'BEGIN:VALARM',
     'TRIGGER:-PT2H',

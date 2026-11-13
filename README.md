@@ -10,7 +10,7 @@ Vite + React + TypeScript, Tailwind, Framer Motion. No photos, no 3D: line-art, 
 2. **The question.** The mascot holds a sign: "Naomi, will you go on a dinner date with me?" with **Yes 💖** and **No**.
 3. **Yes.** The mascot jumps for joy, hearts and rose petals burst, "SHE SAID YES!! 🎉".
 4. **The letter.** Her reward: your letter, typed out gently, with a shy, blushing mascot peeking over the card. Tap the card to skip the typing.
-5. **Date confirmed 💌.** A ticket with the date, time and "Mila Kitchen & Cocktail Bar, Akoka", the dancing mascot, "Add to calendar" and "Send to Jephthah" (WhatsApp).
+5. **Date confirmed 💌.** A ticket with the date and time (no location: it stays a surprise), the dancing mascot, "Add to calendar" and "Send to Jephthah" (WhatsApp).
 
 If she comes back after saying yes, the page opens straight on the ticket. Add `?step=question` (or `envelope`, `celebrate`, `note`, `done`) to the URL to preview any screen, and `?reset` to forget a saved answer.
 
@@ -26,10 +26,9 @@ Edit **`src/config/site.ts`**. Nothing in `components/` needs touching. Every wo
 | --- | --- |
 | `herName`, `yourName` | Her name on the card, your name on the note and the WhatsApp button |
 | `dateTime`, `durationMinutes`, `locale` | The fixed date and time, shown on the ticket and in the `.ics` file |
-| `restaurant` | Name, area and address on the ticket, maps link and `.ics` location |
 | `envelope`, `question` | Envelope text, the sign, the Yes/No labels and the lines the mascot says as No runs away |
 | `celebrate`, `note` | Celebration text and your letter (it is typed out line by line; use `{her}` and `{you}`) |
-| `confirm`, `calendar`, `whatsapp` | Ticket labels, calendar wording and the WhatsApp message (`{date}`, `{time}`, `{where}`, `{area}`) |
+| `confirm`, `calendar`, `whatsapp` | Ticket labels, calendar wording and the WhatsApp message (`{date}`, `{time}`) |
 | `notify.enabled` | Email-me-when-she-answers (see below) |
 | `music` | On or off, volume, file path |
 

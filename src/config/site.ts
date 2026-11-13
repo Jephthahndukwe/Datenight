@@ -7,7 +7,7 @@
  * After editing, run `npm run og` to regenerate the share preview image
  * (public/og.jpg) with her name on it.
  *
- * Placeholders you can use in any string: {her} {you} {date} {time} {where} {area}
+ * Placeholders you can use in any string: {her} {you} {date} {time}
  */
 
 export const site = {
@@ -25,12 +25,6 @@ export const site = {
   durationMinutes: 150,
   /** BCP 47 locale used to format the date for display. */
   locale: 'en-GB',
-
-  restaurant: {
-    name: 'Mila Kitchen & Cocktail Bar',
-    area: 'Akoka',
-    address: 'Lagos Mainland',
-  },
 
   /** Step 1: the envelope. */
   envelope: {
@@ -74,7 +68,7 @@ export const site = {
       'You said yes, and I have been grinning at my screen like a fool ever since.',
       'Thank you for giving me an evening of your time. I promise to make every minute of it worth it.',
       'I am looking forward to your laugh, to long conversations that make us forget the time, and to watching you walk in, my queen, looking exactly like yourself.',
-      'Wear something that makes you feel wonderful. I will be the one trying not to stare.',
+      'Wear something that makes you feel wonderful. I will be the one trying not to stare 😏',
     ],
     signoff: 'Yours, {you}',
     skipHint: 'tap to skip the typing',
@@ -89,7 +83,6 @@ export const site = {
     line: 'It’s a date, my queen.',
     dateLabel: 'Date',
     timeLabel: 'Time',
-    whereLabel: 'Where',
     calendar: 'Add to calendar',
     tell: 'Send to {you}',
     closing: 'See you soon.',
@@ -99,14 +92,14 @@ export const site = {
   /** Digits only, with country code, no + or spaces. 15555550123 is a dummy number. */
   whatsapp: {
     number: '15555550123',
-    /** Placeholders: {her} {date} {time} {where} {area} */
-    message: 'Yes 💖 I’m in!\n\n📅 {date}\n🕖 {time}\n📍 {where}, {area}',
+    /** Placeholders: {her} {date} {time} */
+    message: 'Yes 💖 I’m in!\n\n📅 {date}\n🕖 {time}',
   },
 
   /** Wording inside the calendar file she downloads. */
   calendar: {
     title: 'Dinner with {you} 🕯️',
-    description: 'A table for two at {where}, {area}.',
+    description: 'A table for two. Wear something wonderful.',
     reminderSameDay: 'Dinner tonight',
     reminderDayBefore: 'Dinner tomorrow',
   },
@@ -148,13 +141,11 @@ export const derived = {
     .toLowerCase(),
 };
 
-/** Fill {you}, {her}, {date}, {time}, {where}, {area} in any config string. */
+/** Fill {you}, {her}, {date}, {time} in any config string. */
 export function fill(text: string): string {
   return text
     .replaceAll('{you}', site.yourName)
     .replaceAll('{her}', site.herName)
     .replaceAll('{date}', derived.dateLong)
-    .replaceAll('{time}', derived.time)
-    .replaceAll('{where}', site.restaurant.name)
-    .replaceAll('{area}', site.restaurant.area);
+    .replaceAll('{time}', derived.time);
 }

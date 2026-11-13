@@ -9,7 +9,6 @@ import { Ornament } from '../ui/Ornament';
 /** 5. Date confirmed: the ticket, with a dancing mascot. */
 export function Confirmed({ reduced, fresh }: { reduced: boolean; fresh: boolean }) {
   const ease = [0.22, 0.61, 0.36, 1] as const;
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${site.restaurant.name} ${site.restaurant.area} ${site.restaurant.address}`)}`;
   const delay = fresh && !reduced ? 0.15 : 0;
   const show = (extra: number) => ({
     initial: fresh && !reduced ? { opacity: 0, y: 14 } : (false as const),
@@ -53,13 +52,6 @@ export function Confirmed({ reduced, fresh }: { reduced: boolean; fresh: boolean
             <div className="col-span-2">
               <dt className="text-[9px] uppercase tracking-[0.34em] text-ink-soft">{site.confirm.timeLabel}</dt>
               <dd className="mt-1 font-display text-[1.6rem] font-medium leading-tight text-ruby-600">{derived.time}</dd>
-            </div>
-            <div className="col-span-2 border-t border-dashed border-gold-600/45 pt-3">
-              <dt className="text-[9px] uppercase tracking-[0.34em] text-ink-soft">{site.confirm.whereLabel}</dt>
-              <dd className="mt-1 font-display text-[1.3rem] font-medium leading-tight text-ink">{site.restaurant.name}, {site.restaurant.area}</dd>
-              <dd>
-                <a href={mapsUrl} target="_blank" rel="noreferrer" className="font-sans text-[12px] text-ink-soft underline decoration-gold-600/50 underline-offset-4">{site.restaurant.address}</a>
-              </dd>
             </div>
           </dl>
         </div>
