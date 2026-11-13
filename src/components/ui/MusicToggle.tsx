@@ -1,22 +1,25 @@
 import { site } from '../../config/site';
 import { useMusic } from '../../lib/music';
 
-export function MusicToggle() {
+/** Icon-only, lives in the header strip so it can never sit on top of content. */
+export function MusicToggle({ tone }: { tone: 'light' | 'dark' }) {
   const { playing, toggle } = useMusic();
+  const label = site.music.label.toLowerCase();
   return (
     <button
       type="button"
       onClick={toggle}
       aria-pressed={playing}
-      aria-label={playing ? `Turn the ${site.music.label.toLowerCase()} off` : `Turn the ${site.music.label.toLowerCase()} on`}
-      className="no-callout fixed z-[70] flex items-center gap-2.5 rounded-full border border-gold-400/25 bg-wine-900/85 py-2 pl-3 pr-4 text-[10px] uppercase tracking-[0.28em] text-gold-300/90 transition-colors hover:border-gold-400/60 hover:text-gold-300"
-      style={{ right: 'max(16px, env(safe-area-inset-right))', bottom: 'max(16px, env(safe-area-inset-bottom))' }}
+      aria-label={playing ? `Turn the ${label} off` : `Turn the ${label} on`}
+      className={`no-callout flex h-10 w-10 items-center justify-center rounded-full border transition-colors duration-[2000ms] ${
+        tone === 'dark' ? 'border-gold-400/40 text-gold-300 hover:border-gold-400' : 'border-gold-600/40 text-gold-600 hover:border-gold-600'
+      }`}
     >
-      <span className="flex h-3.5 items-end gap-[2px]" aria-hidden>
+      <span className="flex h-4 items-end gap-[2px]" aria-hidden>
         {[0, 1, 2, 3].map((i) => (
           <span
             key={i}
-            className="w-[2px] origin-bottom rounded-full bg-gold-400"
+            className="w-[2px] origin-bottom rounded-full bg-current"
             style={{
               height: '100%',
               transform: playing ? undefined : 'scaleY(0.25)',
@@ -25,7 +28,6 @@ export function MusicToggle() {
           />
         ))}
       </span>
-      <span>{site.music.label}</span>
       <style>{`@keyframes eq{0%{transform:scaleY(.25)}100%{transform:scaleY(1)}} @media (prefers-reduced-motion:reduce){[aria-pressed] span[style*="eq"]{animation:none!important}}`}</style>
     </button>
   );

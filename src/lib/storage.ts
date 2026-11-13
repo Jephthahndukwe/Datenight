@@ -1,23 +1,31 @@
-import type { Choice } from '../config/site';
+import type { Choice, Picks } from '../config/site';
 
-const KEY = 'dinner:answer';
+const KEY = 'dinner:state';
 
-export function loadAnswer(): Choice | null {
+export type Saved = { answer: Choice | null; picks: Picks };
+
+export function loadState(): Saved {
+  const empty: Saved = { answer: null, picks: {} };
   try {
     if (new URLSearchParams(location.search).has('reset')) {
       localStorage.removeItem(KEY);
-      return null;
+      return empty;
     }
-    const v = localStorage.getItem(KEY);
-    return v === 'yes' || v === 'obviously' ? v : null;
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return empty;
+    const v = JSON.parse(raw) as Partial<Saved>;
+    return {
+      answer: v.answer === 'yes' || v.answer === 'obviously' ? v.answer : null,
+      picks: v.picks && typeof v.picks === 'object' ? v.picks : {},
+    };
   } catch {
-    return null;
+    return empty;
   }
 }
 
-export function saveAnswer(c: Choice) {
+export function saveState(s: Saved) {
   try {
-    localStorage.setItem(KEY, c);
+    localStorage.setItem(KEY, JSON.stringify(s));
   } catch {
     /* private mode etc. */
   }

@@ -23,7 +23,7 @@ function fold(line: string) {
   return out.join('\r\n');
 }
 
-export function buildIcs(): string {
+export function buildIcs(menu = ''): string {
   const start = new Date(site.dateTime);
   const end = new Date(start.getTime() + site.durationMinutes * 60_000);
   const lines = [
@@ -39,7 +39,7 @@ export function buildIcs(): string {
     `DTEND:${fmtLocal(end)}`,
     `SUMMARY:${esc(fill(site.calendar.title))}`,
     `LOCATION:${esc(`${site.restaurant.name}, ${site.restaurant.address}`)}`,
-    `DESCRIPTION:${esc(fill(site.calendar.description))}`,
+    `DESCRIPTION:${esc(fill(site.calendar.description, { menu: menu || 'chef’s choice' }))}`,
     'BEGIN:VALARM',
     'TRIGGER:-PT2H',
     'ACTION:DISPLAY',
@@ -56,8 +56,8 @@ export function buildIcs(): string {
   return lines.map(fold).join('\r\n') + '\r\n';
 }
 
-export function downloadIcs() {
-  const blob = new Blob([buildIcs()], { type: 'text/calendar;charset=utf-8' });
+export function downloadIcs(menu = '') {
+  const blob = new Blob([buildIcs(menu)], { type: 'text/calendar;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

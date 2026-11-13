@@ -3,6 +3,7 @@
 @import '@fontsource/cormorant-garamond/latin-500.css';
 @import '@fontsource/cormorant-garamond/latin-600.css';
 @import '@fontsource/italianno/latin-400.css';
+@import '@fontsource/caveat/latin-500.css';
 @import '@fontsource-variable/inter/wght.css';
 
 @tailwind base;
@@ -11,54 +12,65 @@
 
 :root {
   --wine: #12040a;
-  --gold: #ecbd62;
-  --cream: #f4ead2;
-  color-scheme: dark;
+  --ink: #3a0f1c;
+  --ruby: #9b1b30;
+  --gold: #b8862b;
+  --cream: #f6ecd9;
 }
 
-html {
-  background: var(--wine);
-  -webkit-text-size-adjust: 100%;
-  scroll-behavior: auto;
-}
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-stopped { overflow: hidden; }
+html, body, #root { height: 100%; }
+html { background: var(--wine); -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
   background: var(--wine);
-  color: var(--cream);
+  color: var(--ink);
   font-family: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  overscroll-behavior-y: none;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
-#root { overflow-x: clip; }
-
-::selection { background: rgba(236, 189, 98, 0.35); color: #fff; }
-
+::selection { background: rgba(184, 134, 43, 0.3); }
 button { font: inherit; -webkit-tap-highlight-color: transparent; }
-:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 999px; }
+:focus-visible { outline: 2px solid var(--ruby); outline-offset: 3px; border-radius: 12px; }
+.on-dark :focus-visible { outline-color: #ecbd62; }
 
-/* ---------- vignette ---------- */
-.vignette {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 55;
-  background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(10, 2, 6, 0.5) 100%);
+.no-callout { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+
+/* ---------- paper: warm cream, a soft burgundy vignette and a fine fibre grain ---------- */
+.paper {
+  background-color: #f6ecd9;
+  background-image:
+    radial-gradient(120% 90% at 50% 38%, rgba(255, 249, 235, 0.95) 0%, rgba(246, 236, 217, 0) 62%),
+    radial-gradient(140% 110% at 50% 50%, rgba(246, 236, 217, 0) 55%, rgba(139, 52, 52, 0.16) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.3  0 0 0 0 0.15  0 0 0 0.11 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
 }
 
-/* ---------- slow cinematic motion (transform / opacity only) ---------- */
-.kenburns { animation: kb 30s ease-in-out infinite alternate; will-change: transform; transform-origin: 40% 40%; }
-@keyframes kb {
-  from { transform: scale(1.04) translate3d(0, 0, 0); }
-  to { transform: scale(1.17) translate3d(-2.2%, -1.6%, 0); }
+/* a smaller card of the same stock, a little brighter, with a hand-cut edge */
+.card-paper {
+  background-color: #fbf4e4;
+  background-image:
+    radial-gradient(100% 70% at 30% 0%, rgba(255, 255, 255, 0.7), transparent 60%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.3  0 0 0 0 0.15  0 0 0 0.1 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 18px 40px -18px rgba(60, 20, 20, 0.45), 0 2px 6px rgba(60, 20, 20, 0.12);
 }
-.fade-from-black { animation: fromBlack 2.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both; }
-@keyframes fromBlack { from { opacity: 1; } to { opacity: 0; } }
+
+/* ---------- candle + light ---------- */
+.flame { transform-origin: 50% 90%; animation: flicker 2.6s ease-in-out infinite; will-change: transform; }
+@keyframes flicker {
+  0%, 100% { transform: scale(1, 1) rotate(0deg); }
+  18% { transform: scale(0.97, 1.04) rotate(-1.2deg); }
+  37% { transform: scale(1.03, 0.97) rotate(0.8deg); }
+  58% { transform: scale(0.98, 1.05) rotate(-0.6deg); }
+  79% { transform: scale(1.02, 0.98) rotate(1deg); }
+}
+.candle-glow { animation: glowBreathe 5.5s ease-in-out infinite; will-change: opacity, transform; }
+@keyframes glowBreathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  35% { opacity: 1; transform: scale(1.03); }
+  60% { opacity: 0.9; transform: scale(0.99); }
+}
 
 .bokeh { animation: drift 22s ease-in-out infinite alternate; will-change: transform; }
 @keyframes drift {
@@ -67,22 +79,14 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   100% { transform: translate3d(-10px, -50px, 0) scale(0.95); }
 }
 
-/* "my queen": a quiet candlelit glow */
-.queen-glow { animation: queenGlow 5s ease-in-out infinite; text-shadow: 0 0 18px rgba(255, 190, 100, 0.55), 0 0 44px rgba(255, 150, 60, 0.35); }
-@keyframes queenGlow {
-  0%, 100% { text-shadow: 0 0 14px rgba(255, 190, 100, 0.45), 0 0 38px rgba(255, 150, 60, 0.28); }
-  50% { text-shadow: 0 0 22px rgba(255, 200, 120, 0.7), 0 0 54px rgba(255, 150, 60, 0.42); }
+/* ---------- playful, never bouncy ---------- */
+.wobble { animation: wobble 4.6s ease-in-out infinite; will-change: transform; }
+.wobble.offset { animation-delay: -2.3s; }
+@keyframes wobble {
+  0%, 100% { transform: rotate(-1.3deg) translateY(0); }
+  50% { transform: rotate(1.3deg) translateY(-2px); }
 }
 
-/* soft candlelight breathing behind the question */
-.candle-glow { animation: glowBreathe 5.5s ease-in-out infinite; will-change: opacity, transform; }
-@keyframes glowBreathe {
-  0%, 100% { opacity: 0.85; transform: scale(1); }
-  35% { opacity: 1; transform: scale(1.03); }
-  60% { opacity: 0.9; transform: scale(0.99); }
-}
-
-/* the two yes buttons: a slow, equal, out-of-phase glow */
 .btn-pulse { position: relative; isolation: isolate; }
 .btn-pulse::after {
   content: '';
@@ -90,41 +94,23 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   inset: 0;
   border-radius: inherit;
   z-index: -1;
-  box-shadow: 0 0 34px 8px rgba(236, 189, 98, 0.65);
-  opacity: 0.25;
+  box-shadow: 0 0 30px 8px rgba(184, 134, 43, 0.6);
+  opacity: 0.3;
   animation: pulse 3.8s ease-in-out infinite;
   will-change: opacity, transform;
 }
 .btn-pulse.offset::after { animation-delay: -1.9s; }
 @keyframes pulse {
-  0%, 100% { opacity: 0.22; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.06); }
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.07); }
 }
 
-/* three petals that drift very slowly behind the question */
-.petal-idle { animation: petalFall linear infinite; will-change: transform; }
-@keyframes petalFall {
-  0% { transform: translate3d(0, -12vh, 0) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.8; }
-  50% { transform: translate3d(34px, 50vh, 0) rotate(160deg); }
-  90% { opacity: 0.7; }
-  100% { transform: translate3d(-20px, 112vh, 0) rotate(330deg); opacity: 0; }
-}
-
-/* long-press must never open the iOS/Android callout on the answer buttons */
-.no-callout { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
-
-/* parchment texture for the menu, pure CSS */
-.parchment {
-  background-color: #f1e5c8;
-  background-image:
-    radial-gradient(ellipse at 20% 10%, rgba(255, 250, 230, 0.9), transparent 55%),
-    radial-gradient(ellipse at 90% 100%, rgba(150, 100, 40, 0.28), transparent 60%),
-    radial-gradient(ellipse at 0% 100%, rgba(150, 100, 40, 0.18), transparent 50%),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.04 0.5' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.3  0 0 0 0 0.1  0 0 0 0.16 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+.ring-hint { animation: ringHint 2.8s ease-out infinite; }
+@keyframes ringHint {
+  0% { transform: scale(0.6); opacity: 0.7; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kenburns, .bokeh, .candle-glow, .queen-glow, .btn-pulse::after, .petal-idle { animation: none !important; }
-  .fade-from-black { animation-duration: 0.01s; }
+  .flame, .candle-glow, .bokeh, .wobble, .btn-pulse::after, .ring-hint { animation: none !important; }
 }

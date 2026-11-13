@@ -3,6 +3,7 @@
  * a slow flutter, then it removes itself. No libraries, no per-frame allocation.
  */
 type Petal = {
+  heart?: boolean;
   x: number; y: number; vx: number; vy: number;
   rot: number; vr: number; flip: number; vf: number;
   size: number; color: string; phase: number; sway: number; delay: number; life: number;
@@ -42,6 +43,20 @@ export function burstPetals(onDone: () => void): () => void {
     };
   });
 
+  // a few small hearts that float up instead of falling
+  for (let i = 0; i < 7; i++) {
+    petals.push({
+      heart: true,
+      x: W * (0.12 + Math.random() * 0.76), y: H + 20,
+      vx: (Math.random() - 0.5) * 40, vy: -(70 + Math.random() * 60),
+      rot: (Math.random() - 0.5) * 0.4, vr: (Math.random() - 0.5) * 0.4,
+      flip: 0, vf: 0,
+      size: (9 + Math.random() * 7) * unit,
+      color: ['#c42b45', '#e8808c', '#d9a441'][i % 3],
+      phase: Math.random() * 6.28, sway: 30, delay: 0.5 + Math.random() * 1.6, life: 4.2 + Math.random() * 1.2,
+    });
+  }
+
   const G = 380; // px/s²
   const DRAG = 1.9;
   let t0 = 0;
@@ -51,6 +66,20 @@ export function burstPetals(onDone: () => void): () => void {
 
   const draw = (p: Petal, a: number) => {
     const s = p.size;
+    if (p.heart) {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha = a * 0.9;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.moveTo(0, s * 0.9);
+      ctx.bezierCurveTo(-s * 1.5, -s * 0.1, -s * 0.8, -s * 1.1, 0, -s * 0.4);
+      ctx.bezierCurveTo(s * 0.8, -s * 1.1, s * 1.5, -s * 0.1, 0, s * 0.9);
+      ctx.fill();
+      ctx.restore();
+      return;
+    }
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.rotate(p.rot);
@@ -84,6 +113,16 @@ export function burstPetals(onDone: () => void): () => void {
       if (age < 0) { alive++; continue; }
       if (age > p.life) continue;
       alive++;
+      if (p.heart) {
+        // hearts: buoyant, gentle sway, no tumbling
+        p.vy += (-26 - 0.5 * p.vy) * dt;
+        p.x += (p.vx + Math.sin(t * 1.4 + p.phase) * 22) * dt;
+        p.y += p.vy * dt;
+        const fi = Math.min(1, age / 0.4);
+        const fo = Math.min(1, (p.life - age) / 1.0);
+        draw(p, Math.max(0, Math.min(fi, fo)));
+        continue;
+      }
       const falling = p.vy > 0 ? Math.min(1, p.vy / 120) : 0;
       p.vx += Math.sin(t * 1.7 + p.phase) * p.sway * (0.3 + falling) * dt * 2;
       p.vy += (G - DRAG * p.vy) * dt;

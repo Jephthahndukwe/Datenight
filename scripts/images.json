@@ -1,9 +1,0 @@
-{
-  "widths": [640, 1200],
-  "images": [
-    { "name": "flame", "photo": "photo-1637870793159-53329ad6b958", "credit": "Huma Kabakci",    "url": "https://unsplash.com/photos/bMLxl5Orl5s" },
-    { "name": "wine",  "photo": "photo-1794171770236-6b77ecb97d32", "credit": "Shutter Speed",   "url": "https://unsplash.com/photos/md1BpelShuU" },
-    { "name": "lights","photo": "photo-1551564874-2c247864797e",    "credit": "Bruno Figueiredo","url": "https://unsplash.com/photos/FXfUYwQi9lc" },
-    { "name": "rose",  "photo": "photo-1585059895567-a8f81fc3870c", "credit": "engin akyurt",    "url": "https://unsplash.com/photos/YXPE-wHpaH4" }
-  ]
-}
