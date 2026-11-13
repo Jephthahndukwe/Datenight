@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import type { IconName } from '../../config/site';
 
 /** All artwork is thin line-art in currentColor, so a single text colour class restyles it (gold, ink, wine). */
 type P = { className?: string; strokeWidth?: number };
@@ -12,96 +11,32 @@ function Svg({ viewBox, className, strokeWidth = 1.4, children }: P & { viewBox:
   );
 }
 
-/* ---------- menu cards (64 x 64) ---------- */
+/* ---------- the mascot: a tiny, friendly candle flame (60 x 72) ---------- */
 
-const icons: Record<IconName, ReactNode> = {
-  bruschetta: (
-    <>
-      <path d="M8 40C6 24 17 15 32 15s26 9 24 25c-.6 7-5.500 11-12 11H20c-6.500 0-11.400-4-12-11Z" />
-      <path d="M13 38c1-9 9-15 19-15s18 6 19 15" opacity=".45" />
-      <circle cx="23" cy="33" r="5.500" />
-      <path d="M20 33h6M23 30v6" opacity=".5" />
-      <circle cx="38" cy="30" r="5.500" />
-      <path d="M35 30h6M38 27v6" opacity=".5" />
-      <circle cx="45" cy="41" r="4.500" />
-      <path d="M26 42c3-1 6 0 8 2-3 2-6 1-8-2Z" />
-      <path d="M30 10c0 4 2 6 5 7 1-4-1-7-5-7Z" />
-    </>
-  ),
-  garlic: (
-    <>
-      <rect x="6" y="26" width="46" height="16" rx="8" transform="rotate(-24 29 34)" />
-      <path d="M20 22l6 14M29 18l6 14M38 14l6 14" opacity=".6" transform="translate(-2 3)" />
-      <path d="M47 52c-7 0-8-5-5-9 3-3 4-4 5-8 1 4 2 5 5 8 3 4 2 9-5 9Z" />
-      <path d="M47 52v-7" opacity=".5" />
-    </>
-  ),
-  surprise: (
-    <>
-      <rect x="13" y="29" width="38" height="24" rx="2" />
-      <rect x="10" y="22" width="44" height="8" rx="2" />
-      <path d="M32 22v31" />
-      <path d="M32 22c-4-9-14-10-14-4 0 5 9 5 14 4Zm0 0c4-9 14-10 14-4 0 5-9 5-14 4Z" />
-      <path d="M52 10l1.500 3.500L57 15l-3.500 1.500L52 20l-1.500-3.500L47 15l3.500-1.500Z" />
-    </>
-  ),
-  pasta: (
-    <>
-      <ellipse cx="30" cy="44" rx="25" ry="8" />
-      <ellipse cx="30" cy="43" rx="17" ry="4.500" opacity=".5" />
-      <path d="M15 41c3-14 27-14 30 0M19 39c3-9 19-9 22 0M24 37c2-5 10-5 12 0" />
-      <path d="M54 10v16M50.500 10v8M57.500 10v8M54 26v14" />
-    </>
-  ),
-  pizza: (
-    <>
-      <path d="M10 16c14-7 30-7 44 0L32 56Z" />
-      <path d="M10 16c14-7 30-7 44 0" strokeWidth="2.800" opacity=".6" />
-      <circle cx="26" cy="26" r="4" />
-      <circle cx="39" cy="27" r="3.500" />
-      <circle cx="32" cy="38" r="3.500" />
-      <path d="M30 20l2 2M36 34l2 1" opacity=".6" />
-    </>
-  ),
-  risotto: (
-    <>
-      <path d="M8 34h48c-1 14-11 20-24 20S9 48 8 34Z" />
-      <path d="M13 34c3-13 35-13 38 0" />
-      <path d="M22 29l1 1M30 25l1 1M38 28l1 1M27 31l1 1M35 31l1 1" opacity=".7" />
-      <path d="M24 8c-4 4 0 6 0 10M32 6c-4 4 0 7 0 11M40 8c-4 4 0 6 0 10" opacity=".6" />
-    </>
-  ),
-  tiramisu: (
-    <>
-      <path d="M10 30h40v20H10Z" />
-      <path d="M10 37h40M10 44h40" opacity=".6" />
-      <path d="M50 30l7-7v20l-7 7M10 30l7-7h40" />
-      <path d="M20 26l2 2M30 25l2 2M40 26l2 2M25 22l2 2M36 22l2 2M46 24l2 2" opacity=".6" />
-      <path d="M31 14c3 0 4 2 4 4s-2 3-4 3-4-1-4-3 1-4 4-4Z" />
-    </>
-  ),
-  gelato: (
-    <>
-      <path d="M21 34l11 24 11-24" />
-      <path d="M25 41l14 0M28 48l8 0M24 36l12 20M40 36L28 56" opacity=".5" />
-      <path d="M19 34c-4-12 3-22 13-22s17 10 13 22c-3 4-6 1-6.500 0-2 3-5 3-6.500 0-1.500 3-5 3-6.500 0-1 1-4 4-6.500 0Z" />
-      <path d="M32 12c0-3 2-5 5-6M30 8c-3-1-5 1-5 3s2 3 4 2" opacity=".7" />
-    </>
-  ),
-  heart: (
-    <>
-      <path d="M32 54C8 38 9 16 23 16c6 0 9 4 9 7 0-3 3-7 9-7 14 0 15 22-9 38Z" />
-      <path d="M17 23c0-3 2-5 5-5" opacity=".6" />
-      <path d="M52 8v7M48.500 11.500h7M10 8v5M7.500 10.500h5" opacity=".8" />
-    </>
-  ),
-};
-
-export function MenuIcon({ name, className = '', strokeWidth = 1.4 }: P & { name: IconName }) {
+export function MascotArt({ className = '' }: { className?: string }) {
   return (
-    <Svg viewBox="0 0 64 64" className={className} strokeWidth={strokeWidth}>
-      {icons[name]}
-    </Svg>
+    <svg viewBox="0 0 60 72" className={className} aria-hidden>
+      <defs>
+        <linearGradient id="mf" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stopColor="#ff9d3c" />
+          <stop offset="1" stopColor="#ffd96a" />
+        </linearGradient>
+      </defs>
+      {/* little candle stub */}
+      <rect x="20" y="52" width="20" height="16" rx="3" fill="#fbf4e4" stroke="#b8862b" strokeWidth="1.300" />
+      <path d="M30 50v4" stroke="#6b3a45" strokeWidth="1.400" strokeLinecap="round" />
+      {/* flame body */}
+      <path d="M30 6C16 22 12 34 16 44c3 6 9 8 14 8s11-2 14-8c4-10 0-22-14-38Z" fill="url(#mf)" stroke="#d9962e" strokeWidth="1.300" strokeLinejoin="round" />
+      <path d="M30 24c-6 8-8 14-5 19 2 3 5 4 5 4s3-1 5-4c3-5 1-11-5-19Z" fill="#fff4cf" opacity=".7" />
+      {/* face */}
+      <circle cx="24" cy="38" r="2" fill="#3a0f1c" />
+      <circle cx="36" cy="38" r="2" fill="#3a0f1c" />
+      <circle cx="23.500" cy="37.400" r=".6" fill="#fff" />
+      <circle cx="35.500" cy="37.400" r=".6" fill="#fff" />
+      <path d="M26 43c1.500 2.500 6.500 2.500 8 0" stroke="#3a0f1c" strokeWidth="1.400" strokeLinecap="round" fill="none" />
+      <circle cx="19.500" cy="42" r="2.600" fill="#ff7a8a" opacity=".55" />
+      <circle cx="40.500" cy="42" r="2.600" fill="#ff7a8a" opacity=".55" />
+    </svg>
   );
 }
 

@@ -38,6 +38,10 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .no-callout { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
 
+/* hide scrollbars on swipeable rows and lists */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 /* ---------- paper: warm cream, a soft burgundy vignette and a fine fibre grain ---------- */
 .paper {
   background-color: #f6ecd9;

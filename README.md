@@ -9,9 +9,9 @@ Vite + React + TypeScript, Tailwind, Framer Motion. No photos, no 3D: everything
 1. **Arrival.** A dark screen and a small reservation card with her name. She taps "Come in".
 2. **Light the candle.** An unlit line-art candle. She taps it: the flame catches, warm light blooms, and the dark room turns to cream paper.
 3. **A note from you.** A handwritten-style card that fades in line by line.
-4. **Build your menu.** One illustrated card per course. Each pick gets a small animation and a cheeky one-line reaction. Her choices are saved.
+4. **Build your plate.** The real menu from Mila Kitchen & Cocktail Bar, inside the site: category tabs (Starters, Mains, Desserts, Drinks), swipeable lists of illustrated cards, a "Surprise me" and an "I'll decide there" option in every category, a squish-and-check animation on each pick, and a little flame mascot with a cheeky line for every dish. A floating "Naomi's order" pill opens a bottom sheet where she can remove items. Limits: up to 2 starters, 1 main, 1 dessert, 1 or 2 drinks.
 5. **The question.** Two yeses, "Yes" and "Obviously yes", with a soft glow and a gentle wobble.
-6. **Reservation confirmed.** Rose petals and hearts, then a card with her name, the date, the place and her menu, plus "Add to calendar" and a WhatsApp button whose message includes her menu picks.
+6. **Date confirmed.** Rose petals and hearts, then a ticket with her name, the date, the time, the restaurant and her full order, plus "Add to calendar" and "Send to Chika", whose WhatsApp message lists the date, time, place and her order neatly.
 
 If she comes back after answering, the page opens straight on the confirmation. Add `?step=candle` (or `note`, `menu`, `question`, `done`) to the URL to preview any screen, and `?reset` to forget a saved answer.
 
@@ -26,13 +26,17 @@ Edit **`src/config/site.ts`**. Nothing in `components/` needs touching. Every wo
 | `restaurant` | Confirmation card, maps link, `.ics` location |
 | `arrival`, `candle` | Reservation card and candle screen copy |
 | `note` | Your handwritten note, line by line (use `{her}` and `{you}`) |
-| `menu.courses` | Courses, options, their illustrations and her cheeky reactions |
+| `menu` | Menu-step copy and the `showPrices` flag (default `false`; `true` shows ₦ prices on cards, in the sheet and on the ticket) |
 | `question`, `thanks` | The big question, the two yes labels, the two thank-you lines |
 | `confirm`, `calendar`, `whatsapp` | Confirmation labels, calendar wording, WhatsApp text (`{menu}` is her picks) |
 | `notify.enabled` | Email-me-when-she-answers (see below) |
 | `music` | On or off, volume, file path |
 
-Illustration names for menu options: `bruschetta`, `garlic`, `surprise`, `pasta`, `pizza`, `risotto`, `tiramisu`, `gelato`, `heart`. To add a new dish, draw it in `components/ui/Illustrations.tsx` and add its name to the `IconName` type in the config.
+### The menu data
+
+Every dish lives in **`src/config/menu.ts`** as plain data: `name`, `description`, `price` (naira), `category`, `subcategory`, `icon` and an optional cheeky `reaction`. Edit prices and descriptions there, or add a dish by adding one line. `categories` sets the tab labels and pick limits. Icons are thin line drawings in `components/ui/DishIcons.tsx`; reuse an existing icon name or draw a new one.
+
+The mascot is a small candle flame (`MascotArt` in `components/ui/Illustrations.tsx`).
 
 Regenerate the share preview with her name on it:
 
@@ -89,9 +93,10 @@ After deploying, paste the link into WhatsApp or iMessage to check the preview. 
 ```
 src/
   config/site.ts          every word and detail
+  config/menu.ts          the menu, as data
   components/
     sections/             Arrival, Candle, Note, MenuBuilder, Question, Confirmed
-    ui/                   Illustrations (line-art), Button, Bokeh, Ornament, MusicToggle
+    ui/                   Illustrations, DishIcons, Button, Bokeh, Ornament, MusicToggle
   lib/                    ics, share, music, storage, petals (canvas)
 api/notify.ts             optional Resend email
 scripts/                  make-og.mjs, make-music.mjs

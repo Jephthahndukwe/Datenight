@@ -1,7 +1,8 @@
-import { site, fill, menuSummary, type Choice, type Picks } from '../config/site';
+import { site, fill, type Choice } from '../config/site';
+import { orderText, type Order } from '../config/menu';
 
-export function whatsappUrl(choice: Choice, picks: Picks) {
-  const text = fill(site.whatsapp.messages[choice], { menu: menuSummary(picks) || '—' });
+export function whatsappUrl(choice: Choice, order: Order) {
+  const text = fill(site.whatsapp.messages[choice], { menu: orderText(order) || 'Chef’s choice' });
   return `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(text)}`;
 }
 

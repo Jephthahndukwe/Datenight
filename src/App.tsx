@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m } from 'framer-motion';
-import { fill, menuSummary, site, type Choice, type Picks } from './config/site';
+import { fill, site, type Choice } from './config/site';
+import { orderText, type Order } from './config/menu';
 import { getTier } from './lib/capabilities';
 import { burstPetals } from './lib/petals';
 import { notifyAnswer } from './lib/share';
@@ -15,12 +16,12 @@ import { Question } from './components/sections/Question';
 import { Confirmed } from './components/sections/Confirmed';
 
 type Step = 'arrival' | 'candle' | 'note' | 'menu' | 'question' | 'done';
-const order: Step[] = ['arrival', 'candle', 'note', 'menu', 'question', 'done'];
+const steps: Step[] = ['arrival', 'candle', 'note', 'menu', 'question', 'done'];
 
 /** Where to start: a saved answer jumps straight to the confirmation; ?step=note etc. is handy for previewing. */
 function initial(saved: ReturnType<typeof loadState>): { step: Step; answer: Choice | null } {
   const q = new URLSearchParams(location.search).get('step') as Step | null;
-  if (q && order.includes(q)) return { step: q, answer: q === 'done' ? (saved.answer ?? 'yes') : saved.answer };
+  if (q && steps.includes(q)) return { step: q, answer: q === 'done' ? (saved.answer ?? 'yes') : saved.answer };
   if (saved.answer) return { step: 'done', answer: saved.answer };
   return { step: 'arrival', answer: null };
 }
@@ -32,24 +33,23 @@ export function App() {
   const [start] = useState(() => initial(saved));
   const [step, setStep] = useState<Step>(start.step);
   const [answer, setAnswer] = useState<Choice | null>(start.answer);
-  const [picks, setPicks] = useState<Picks>(saved.picks);
+  const [order, setOrder] = useState<Order>(saved.order);
   const [fresh, setFresh] = useState(false);
   // the room is dark until the candle is lit; later screens (or a returning visit) start already lit
-  const [lit, setLit] = useState(order.indexOf(start.step) > 1);
+  const [lit, setLit] = useState(steps.indexOf(start.step) > 1);
 
-  const next = useCallback(() => setStep((s) => order[Math.min(order.indexOf(s) + 1, order.length - 1)]), []);
+  const next = useCallback(() => setStep((s) => steps[Math.min(steps.indexOf(s) + 1, steps.length - 1)]), []);
 
-  const pick = (course: string, option: string) => {
-    const p = { ...picks, [course]: option };
-    setPicks(p);
-    saveState({ answer, picks: p });
+  const changeOrder = (o: Order) => {
+    setOrder(o);
+    saveState({ answer, order: o });
   };
 
   const answerNow = (c: Choice) => {
     setAnswer(c);
     setFresh(true);
-    saveState({ answer: c, picks });
-    notifyAnswer(c, menuSummary(picks));
+    saveState({ answer: c, order });
+    notifyAnswer(c, orderText(order));
     if (!reduced) burstPetals(() => {});
     if (navigator.vibrate) navigator.vibrate(20);
     setStep('done');
@@ -102,14 +102,14 @@ export function App() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
                   transition={{ duration: 0.8, ease: [0.22, 0.61, 0.36, 1] }}
-                  className="mx-auto flex min-h-full w-full max-w-md flex-col items-center justify-center px-5 pb-8 pt-2"
+                  className={`mx-auto flex min-h-full w-full max-w-md flex-col items-center ${step === 'menu' ? 'justify-start' : 'justify-center px-5 pb-8 pt-2'}`}
                 >
                   {step === 'arrival' && <Arrival onNext={next} reduced={reduced} />}
                   {step === 'candle' && <Candle lit={lit} onLight={() => setLit(true)} onNext={next} reduced={reduced} />}
                   {step === 'note' && <Note onNext={next} reduced={reduced} />}
-                  {step === 'menu' && <MenuBuilder picks={picks} onPick={pick} onNext={next} reduced={reduced} />}
+                  {step === 'menu' && <MenuBuilder order={order} onChange={changeOrder} onNext={next} reduced={reduced} />}
                   {step === 'question' && <Question onAnswer={answerNow} reduced={reduced} />}
-                  {step === 'done' && answer && <Confirmed choice={answer} picks={picks} reduced={reduced} fresh={fresh} />}
+                  {step === 'done' && answer && <Confirmed choice={answer} order={order} reduced={reduced} fresh={fresh} />}
                 </m.div>
               </AnimatePresence>
             </main>

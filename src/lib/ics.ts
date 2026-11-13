@@ -39,7 +39,7 @@ export function buildIcs(menu = ''): string {
     `DTEND:${fmtLocal(end)}`,
     `SUMMARY:${esc(fill(site.calendar.title))}`,
     `LOCATION:${esc(`${site.restaurant.name}, ${site.restaurant.address}`)}`,
-    `DESCRIPTION:${esc(fill(site.calendar.description, { menu: menu || 'chef’s choice' }))}`,
+    `DESCRIPTION:${esc(fill(site.calendar.description, { menu: menu ? '\n' + menu : 'chef’s choice' }))}`,
     'BEGIN:VALARM',
     'TRIGGER:-PT2H',
     'ACTION:DISPLAY',

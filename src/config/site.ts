@@ -12,15 +12,6 @@
 
 export type Choice = 'yes' | 'obviously';
 
-/** Illustrations available for the menu cards (see components/ui/Illustrations.tsx). */
-export type IconName =
-  | 'bruschetta' | 'garlic' | 'surprise'
-  | 'pasta' | 'pizza' | 'risotto'
-  | 'tiramisu' | 'gelato' | 'heart';
-
-export type MenuOption = { id: string; label: string; icon: IconName; reaction: string };
-export type MenuCourse = { id: string; name: string; prompt: string; options: readonly MenuOption[] };
-
 export const site = {
   /** Her name. */
   herName: 'Naomi',
@@ -38,8 +29,8 @@ export const site = {
   locale: 'en-GB',
 
   restaurant: {
-    name: 'Your Restaurant',
-    address: '12 Your Street, Your City',
+    name: 'Mila Kitchen & Cocktail Bar',
+    address: 'Akoka, Lagos Mainland',
   },
 
   /** Step 1: the reservation card on the dark opening screen. */
@@ -71,44 +62,24 @@ export const site = {
     next: 'Build our menu',
   },
 
-  /** Step 4: she picks one card per course. Each pick gets a cheeky reaction. */
+  /**
+   * Step 4: she builds her order from the real menu (the dishes live in config/menu.ts).
+   * Set showPrices to true to show ₦ prices on the cards, in the order sheet and on the ticket.
+   */
   menu: {
-    courseLabel: 'Course {n} of {total}',
-    doneEyebrow: 'Your menu',
-    doneTitle: 'Excellent taste, as always.',
-    next: 'Continue',
-    courses: [
-      {
-        id: 'start',
-        name: 'To Start',
-        prompt: 'Something small to begin with?',
-        options: [
-          { id: 'bruschetta', label: 'Bruschetta', icon: 'bruschetta', reaction: 'Crunchy and a little bit fancy. Just like you.' },
-          { id: 'garlic', label: 'Garlic bread', icon: 'garlic', reaction: 'A woman who knows what she wants. I will be eating it too, obviously.' },
-          { id: 'surprise', label: 'Surprise me', icon: 'surprise', reaction: 'Ooh, mysterious. I love that you trust me.' },
-        ],
-      },
-      {
-        id: 'main',
-        name: 'The Main',
-        prompt: 'Now the serious part.',
-        options: [
-          { id: 'pasta', label: 'Pasta', icon: 'pasta', reaction: 'Pasta it is. Twirling is mandatory.' },
-          { id: 'pizza', label: 'Pizza', icon: 'pizza', reaction: 'Correct answer. Sharing is optional, but I will ask.' },
-          { id: 'risotto', label: 'Risotto', icon: 'risotto', reaction: 'Patience and style. Very you.' },
-        ],
-      },
-      {
-        id: 'dessert',
-        name: 'For Dessert',
-        prompt: 'Save room for this one.',
-        options: [
-          { id: 'tiramisu', label: 'Tiramisu', icon: 'tiramisu', reaction: 'Sweet, a little strong, a bit of a mood. Perfect.' },
-          { id: 'gelato', label: 'Gelato', icon: 'gelato', reaction: 'We will eat it on a walk, with absolutely no rush.' },
-          { id: 'you', label: 'You', icon: 'heart', reaction: 'Oh, you went there. I am blushing. Noted.' },
-        ],
-      },
-    ] as readonly MenuCourse[],
+    showPrices: false,
+    title: 'Build your plate 🍽️',
+    subtitle: 'Tap what you like. Swipe for more.',
+    surpriseLabel: 'Surprise me 👀',
+    decideLabel: 'I’ll decide there',
+    orderPill: '{her}’s order ({n})',
+    sheetTitle: 'Your order',
+    sheetEmpty: 'Nothing yet. Tap something yummy.',
+    sheetBack: 'Keep browsing',
+    remove: 'Remove',
+    total: 'Total',
+    done: 'That’s my order',
+    limitWarning: 'That’s the limit! Tap one to swap.',
   },
 
   /** Step 5: the big question. */
@@ -128,7 +99,7 @@ export const site = {
 
   /** Step 6: the confirmation card. */
   confirm: {
-    eyebrow: 'Reservation confirmed',
+    eyebrow: 'Date confirmed 💌',
     /** A little ink stamp that thumps onto the card. */
     stamp: 'Approved',
     guestLabel: 'Guest',
@@ -137,9 +108,9 @@ export const site = {
     dateLabel: 'Date',
     timeLabel: 'Time',
     whereLabel: 'Where',
-    menuLabel: 'Your menu',
+    menuLabel: 'Your order',
     calendar: 'Add to calendar',
-    tell: 'Tell {you}',
+    tell: 'Send to {you}',
     closing: 'See you soon.',
   },
 
@@ -148,15 +119,15 @@ export const site = {
     number: '15555550123',
     /** Placeholders: {her} {when} {where} {menu} */
     messages: {
-      yes: 'Yes 🥂 I’m in. See you {when} at {where}. My menu: {menu}.',
-      obviously: 'Obviously yes 😌 See you {when} at {where}. My menu: {menu}.',
+      yes: 'Yes 🥂 I’m in!\n\n📅 {when}\n📍 {where}, Akoka\n\nMy order:\n{menu}',
+      obviously: 'Obviously yes 😌\n\n📅 {when}\n📍 {where}, Akoka\n\nMy order:\n{menu}',
     } satisfies Record<Choice, string>,
   },
 
   /** Wording inside the calendar file she downloads. */
   calendar: {
     title: 'Dinner with {you} 🕯️',
-    description: 'A table for two at {where}. Her menu: {menu}.',
+    description: 'A table for two at {where}. Her order: {menu}',
     reminderSameDay: 'Dinner tonight',
     reminderDayBefore: 'Dinner tomorrow',
   },
@@ -207,19 +178,4 @@ export function fill(text: string, extra: Record<string, string | number> = {}):
     .replaceAll('{where}', site.restaurant.name);
   for (const [k, v] of Object.entries(extra)) out = out.replaceAll(`{${k}}`, String(v));
   return out;
-}
-
-/** Her picks, course id -> option id. */
-export type Picks = Record<string, string>;
-
-/** Option objects in course order for the picks made so far. */
-export function pickedOptions(picks: Picks): { course: MenuCourse; option: MenuOption }[] {
-  return site.menu.courses.flatMap((course) => {
-    const option = course.options.find((o) => o.id === picks[course.id]);
-    return option ? [{ course, option }] : [];
-  });
-}
-
-export function menuSummary(picks: Picks): string {
-  return pickedOptions(picks).map((p) => p.option.label).join(', ');
 }
