@@ -10,7 +10,7 @@ Vite + React + TypeScript, Tailwind, Framer Motion. No photos, no 3D: line-art, 
 2. **The question.** The mascot holds a sign: "Naomi, will you go on a dinner date with me?" with **Yes 💖** and **No**.
 3. **Yes.** The mascot jumps for joy, hearts and rose petals burst, "SHE SAID YES!! 🎉".
 4. **The letter.** Her reward: your letter, typed out gently, with a shy, blushing mascot peeking over the card. Tap the card to skip the typing.
-5. **Date confirmed 💌.** A ticket with the date, time and "Mila Kitchen & Cocktail Bar, Akoka", the dancing mascot, "Add to calendar" and "Send to Chika" (WhatsApp).
+5. **Date confirmed 💌.** A ticket with the date, time and "Mila Kitchen & Cocktail Bar, Akoka", the dancing mascot, "Add to calendar" and "Send to Jephthah" (WhatsApp).
 
 If she comes back after saying yes, the page opens straight on the ticket. Add `?step=question` (or `envelope`, `celebrate`, `note`, `done`) to the URL to preview any screen, and `?reset` to forget a saved answer.
 

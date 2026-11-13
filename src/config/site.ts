@@ -15,7 +15,7 @@ export const site = {
   herName: 'Naomi',
 
   /** Your first name. Used in "Send to {you}", the letter sign-off and the calendar event. */
-  yourName: 'Chika',
+  yourName: 'Jephthah',
 
   /**
    * Local date and time of the dinner, as YYYY-MM-DDTHH:mm (no timezone, so it
