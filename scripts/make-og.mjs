@@ -21,12 +21,12 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:Int;src:url(${font('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')})}
 *{margin:0;box-sizing:border-box}
 body{width:1200px;height:630px;overflow:hidden;background:#12040a;position:relative;color:#f4ead2;font-family:Corm,serif}
-.bg{position:absolute;inset:0;background:url(${pathToFileURL(resolve(root,'public/img/hero-1200.webp')).href}) 50% 14%/cover}
-.shade{position:absolute;inset:0;background:linear-gradient(270deg,rgba(18,4,10,.92) 0%,rgba(44,11,25,.78) 38%,rgba(44,11,25,0) 66%,rgba(18,4,10,.25) 100%)}
+.bg{position:absolute;inset:0;background:url(${pathToFileURL(resolve(root,'public/img/flame-1200.webp')).href}) 50% 10%/cover}
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,4,10,.92) 0%,rgba(18,4,10,.7) 36%,rgba(18,4,10,0) 62%,rgba(18,4,10,.2) 100%)}
 .vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(8,1,4,.6) 100%)}
 .frame{position:absolute;inset:26px;border:1px solid rgba(236,189,98,.32)}
 .frame::after{content:"";position:absolute;inset:8px;border:1px solid rgba(236,189,98,.14)}
-.txt{position:absolute;left:600px;top:0;bottom:0;width:560px;display:flex;flex-direction:column;justify-content:center}
+.txt{position:absolute;left:96px;top:0;bottom:0;width:560px;display:flex;flex-direction:column;justify-content:center}
 .k{font:600 15px Int;letter-spacing:.42em;text-transform:uppercase;color:#ecbd62}
 .l{font-style:italic;font-size:46px;margin-top:34px;color:#e9dab8}
 .n{font-family:Ital;font-size:190px;line-height:.9;margin-top:4px;color:#fbf6ea;text-shadow:0 0 60px rgba(236,160,70,.35)}
@@ -35,7 +35,7 @@ body{width:1200px;height:630px;overflow:hidden;background:#12040a;position:relat
 <div class="bg"></div><div class="shade"></div>
 <div class="vig"></div><div class="frame"></div>
 <div class="txt">
-  <div class="k">Una cena per due</div>
+  <div class="k">${site.eyebrow}</div>
   <div class="l">A little question for you,</div>
   <div class="n">${site.herName}</div>
 </div>

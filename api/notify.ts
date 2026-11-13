@@ -12,8 +12,8 @@
  */
 
 const LABEL: Record<string, string> = {
-  si: '“Sì”',
-  obviously: '“Obviously, sì”',
+  yes: '“Yes”',
+  obviously: '“Obviously yes”',
 };
 
 const json = (status: number, body: unknown) =>
@@ -34,12 +34,12 @@ export async function POST(request: Request): Promise<Response> {
   } catch {
     return json(400, { error: 'bad json' });
   }
-  const choice = body.choice === 'si' || body.choice === 'obviously' ? body.choice : null;
+  const choice = body.choice === 'yes' || body.choice === 'obviously' ? body.choice : null;
   if (!choice) return json(400, { error: 'bad choice' });
 
   const her = String(body.her ?? 'She').slice(0, 60).replace(/[<>&"]/g, '');
   const when = new Date().toUTCString();
-  const from = process.env.NOTIFY_FROM_EMAIL || 'Una Cena <onboarding@resend.dev>';
+  const from = process.env.NOTIFY_FROM_EMAIL || 'Dinner for Two <onboarding@resend.dev>';
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',

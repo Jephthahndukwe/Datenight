@@ -1,6 +1,6 @@
 import type { Choice } from '../config/site';
 
-const KEY = 'cena:answer';
+const KEY = 'dinner:answer';
 
 export function loadAnswer(): Choice | null {
   try {
@@ -9,7 +9,7 @@ export function loadAnswer(): Choice | null {
       return null;
     }
     const v = localStorage.getItem(KEY);
-    return v === 'si' || v === 'obviously' ? v : null;
+    return v === 'yes' || v === 'obviously' ? v : null;
   } catch {
     return null;
   }

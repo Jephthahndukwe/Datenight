@@ -1,38 +1,9 @@
 {
-  "widths": [
-    640,
-    1200
-  ],
+  "widths": [640, 1200],
   "images": [
-    {
-      "name": "hero",
-      "photo": "photo-1625668931397-b9c35f63186b",
-      "credit": "Alexandra Marta",
-      "url": "https://unsplash.com/photos/fNyunAZExdA"
-    },
-    {
-      "name": "coast",
-      "photo": "photo-1581416271259-abec87515f51",
-      "credit": "Reiseuhu",
-      "url": "https://unsplash.com/photos/Qw-K23N1V4s"
-    },
-    {
-      "name": "table",
-      "photo": "photo-1772479075224-473da668374a",
-      "credit": "Yimeng Zhao",
-      "url": "https://unsplash.com/photos/O0toycp-Vd0"
-    },
-    {
-      "name": "lemons",
-      "photo": "photo-1610123791972-721796d470c4",
-      "credit": "Lory",
-      "url": "https://unsplash.com/photos/Gq1AP5CuCys"
-    },
-    {
-      "name": "candles",
-      "photo": "photo-1688437307687-fe226bddfab1",
-      "credit": "Zac Cain",
-      "url": "https://unsplash.com/photos/HCFqhYC_Hvw"
-    }
+    { "name": "flame", "photo": "photo-1637870793159-53329ad6b958", "credit": "Huma Kabakci",    "url": "https://unsplash.com/photos/bMLxl5Orl5s" },
+    { "name": "wine",  "photo": "photo-1794171770236-6b77ecb97d32", "credit": "Shutter Speed",   "url": "https://unsplash.com/photos/md1BpelShuU" },
+    { "name": "lights","photo": "photo-1551564874-2c247864797e",    "credit": "Bruno Figueiredo","url": "https://unsplash.com/photos/FXfUYwQi9lc" },
+    { "name": "rose",  "photo": "photo-1585059895567-a8f81fc3870c", "credit": "engin akyurt",    "url": "https://unsplash.com/photos/YXPE-wHpaH4" }
   ]
 }

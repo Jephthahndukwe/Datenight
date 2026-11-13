@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { m, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
-import { site, derived } from '../../config/site';
+import { fill, site } from '../../config/site';
 import { useInView } from '../../lib/useInView';
 import { useOrientationTilt } from '../../lib/useTilt';
 import { Ornament } from '../ui/Ornament';
@@ -8,14 +8,9 @@ import { Picture } from '../ui/Picture';
 
 type Props = { reducedMotion: boolean; coarse: boolean };
 
-const courses = [
-  { name: 'Antipasto', label: 'Quando', value: `${derived.dateLong}, ${derived.time}` },
-  { name: 'Primo', label: 'Dove', value: site.restaurant.name },
-  { name: 'Secondo', label: 'Di cosa', value: site.menu.secondo },
-  { name: 'Dolce', label: 'Per finire', value: site.menu.dolce },
-];
+const courses = site.menu.courses.map((c) => ({ ...c, value: fill(c.value) }));
 
-/** 3. A parchment trattoria menu that turns over in 3D. The "dishes" are the plan. */
+/** 3. The one object in the experience: a handwritten-style card on a candlelit table. The courses are the plan. */
 export function Menu({ reducedMotion, coarse }: Props) {
   const [ref, inView] = useInView<HTMLDivElement>('0px 0px -22% 0px');
   const [open, setOpen] = useState(false);
@@ -56,10 +51,9 @@ export function Menu({ reducedMotion, coarse }: Props) {
   return (
     <section ref={section} id="menu" onPointerMove={onPointerMove} className="relative flex min-h-[100svh] w-full flex-col items-center justify-center overflow-hidden px-4 pb-28 pt-24">
       <div aria-hidden className="absolute inset-0 bg-wine-950" />
-      <Picture name="candles" width={640} height={960} alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.3]" />
+      <Picture name="lights" width={640} height={853} alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.34]" />
       <div aria-hidden className="absolute inset-0" style={{ background: 'radial-gradient(70% 55% at 50% 48%, rgba(58,15,32,0.55) 0%, rgba(29,7,16,0.82) 62%, #12040a 100%)' }} />
-      <p className="relative text-center text-[10px] uppercase tracking-[0.42em] text-gold-300/80">III &nbsp;·&nbsp; Il menù</p>
-      <p className="relative mb-6 mt-2 text-center font-display text-base italic text-cream-200/55">Tap to turn the card{coarse ? ', tilt your phone' : ''}</p>
+      <p className="relative mb-7 text-center font-display text-base italic text-cream-200/55">{coarse ? site.menu.hintTouch : site.menu.hint}</p>
 
       <div ref={ref} className="relative [perspective:1400px]">
         <m.div style={reducedMotion ? undefined : { rotateX: tiltX, rotateY: tiltY }} className="[transform-style:preserve-3d]">
@@ -93,12 +87,12 @@ export function Menu({ reducedMotion, coarse }: Props) {
             <div className="absolute inset-[6cqw] rounded-[4px] border border-gold-500/25" />
             <div className="relative flex h-full flex-col items-center justify-center text-center">
               <Ornament className="w-[46cqw]" />
-              <p className="mt-[6cqw] font-display italic text-gold-300" style={{ fontSize: '6.4cqw' }}>Trattoria</p>
+              <p className="mt-[6cqw] font-display italic text-gold-300" style={{ fontSize: '6.4cqw' }}>{site.menu.coverTop}</p>
               <h2 className="mt-[1cqw] font-display font-medium uppercase text-gold-300" style={{ fontSize: '10.5cqw', letterSpacing: '0.12em', lineHeight: 1.05 }}>
-                Il Menù
+                {site.menu.coverTitle}
               </h2>
               <p className="mt-[5cqw] font-display italic text-cream-200/80" style={{ fontSize: '5.4cqw' }}>
-                per due persone
+                {site.menu.coverBottom}
               </p>
               <Ornament className="mt-[6cqw] w-[46cqw]" />
             </div>
@@ -111,7 +105,7 @@ export function Menu({ reducedMotion, coarse }: Props) {
           >
             <div className="absolute inset-[3.4cqw] rounded-[4px] border border-[#8a5a2a]/35" />
             <div className="relative flex h-full flex-col px-[9cqw] pb-[7cqw] pt-[8cqw] text-center">
-              <p className="font-sans uppercase text-[#8a5a2a]" style={{ fontSize: '2.7cqw', letterSpacing: '0.42em' }}>Una cena per due</p>
+              <p className="font-sans uppercase text-[#8a5a2a]" style={{ fontSize: '2.7cqw', letterSpacing: '0.42em' }}>{site.menu.title}</p>
               <Ornament tone="ink" className="mx-auto mt-[2.5cqw] w-[38cqw]" />
 
               <ul className="mt-[3.5cqw] flex flex-1 flex-col justify-between pb-[3cqw]">

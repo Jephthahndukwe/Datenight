@@ -1,4 +1,4 @@
-import { site, derived } from '../config/site';
+import { site, derived, fill } from '../config/site';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -29,26 +29,26 @@ export function buildIcs(): string {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Una Cena Per Due//EN',
+    'PRODID:-//Dinner for Two//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    `UID:cena-${fmtLocal(start)}@una-cena-per-due`,
+    `UID:dinner-${fmtLocal(start)}@dinner-for-two`,
     `DTSTAMP:${fmtUtc(new Date())}`,
     `DTSTART:${fmtLocal(start)}`,
     `DTEND:${fmtLocal(end)}`,
-    `SUMMARY:${esc(`Dinner with ${site.yourName} 🕯️`)}`,
+    `SUMMARY:${esc(fill(site.calendar.title))}`,
     `LOCATION:${esc(`${site.restaurant.name}, ${site.restaurant.address}`)}`,
-    `DESCRIPTION:${esc(`Antipasto, primo, secondo, dolce. A table for two at ${site.restaurant.name}. Good conversation guaranteed.`)}`,
+    `DESCRIPTION:${esc(fill(site.calendar.description))}`,
     'BEGIN:VALARM',
     'TRIGGER:-PT2H',
     'ACTION:DISPLAY',
-    `DESCRIPTION:${esc('Dinner tonight')}`,
+    `DESCRIPTION:${esc(site.calendar.reminderSameDay)}`,
     'END:VALARM',
     'BEGIN:VALARM',
     'TRIGGER:-P1D',
     'ACTION:DISPLAY',
-    `DESCRIPTION:${esc('Dinner tomorrow')}`,
+    `DESCRIPTION:${esc(site.calendar.reminderDayBefore)}`,
     'END:VALARM',
     'END:VEVENT',
     'END:VCALENDAR',

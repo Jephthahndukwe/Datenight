@@ -1,3 +1,4 @@
+import { site } from '../../config/site';
 import { useMusic } from '../../lib/music';
 
 export function MusicToggle() {
@@ -7,7 +8,7 @@ export function MusicToggle() {
       type="button"
       onClick={toggle}
       aria-pressed={playing}
-      aria-label={playing ? 'Turn the music off' : 'Turn the music on'}
+      aria-label={playing ? `Turn the ${site.music.label.toLowerCase()} off` : `Turn the ${site.music.label.toLowerCase()} on`}
       className="no-callout fixed z-[70] flex items-center gap-2.5 rounded-full border border-gold-400/25 bg-wine-900/85 py-2 pl-3 pr-4 text-[10px] uppercase tracking-[0.28em] text-gold-300/90 transition-colors hover:border-gold-400/60 hover:text-gold-300"
       style={{ right: 'max(16px, env(safe-area-inset-right))', bottom: 'max(16px, env(safe-area-inset-bottom))' }}
     >
@@ -24,7 +25,7 @@ export function MusicToggle() {
           />
         ))}
       </span>
-      <span>Musica</span>
+      <span>{site.music.label}</span>
       <style>{`@keyframes eq{0%{transform:scaleY(.25)}100%{transform:scaleY(1)}} @media (prefers-reduced-motion:reduce){[aria-pressed] span[style*="eq"]{animation:none!important}}`}</style>
     </button>
   );

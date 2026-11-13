@@ -1,8 +1,8 @@
 /**
- * Synthesises a short, loopable "trattoria guitar" track (Karplus-Strong plucks,
- * 6/8 fingerpicking over Am Dm G C F Dm E7 Am) and encodes it to public/audio/cena.mp3.
+ * Synthesises a short, loopable "fingerpicked guitar" track (Karplus-Strong plucks,
+ * 6/8 fingerpicking over Am Dm G C F Dm E7 Am) and encodes it to public/audio/dinner.mp3.
  * It's original, so it's royalty-free by construction. To use a real track instead,
- * just overwrite public/audio/cena.mp3 (and keep the same name or edit config/site.ts).
+ * just overwrite public/audio/dinner.mp3 (and keep the same name or edit config/site.ts).
  *
  * Run: npm run music   (needs ffmpeg on PATH)
  */
@@ -116,10 +116,10 @@ hdr.writeUInt32LE(16, 16); hdr.writeUInt16LE(1, 20); hdr.writeUInt16LE(2, 22);
 hdr.writeUInt32LE(SR, 24); hdr.writeUInt32LE(SR * 4, 28); hdr.writeUInt16LE(4, 32); hdr.writeUInt16LE(16, 34);
 hdr.write('data', 36); hdr.writeUInt32LE(pcm.length, 40);
 
-const wav = join(tmpdir(), 'cena-raw.wav');
+const wav = join(tmpdir(), 'dinner-raw.wav');
 writeFileSync(wav, Buffer.concat([hdr, pcm]));
 mkdirSync('public/audio', { recursive: true });
 execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', wav,
   '-af', 'lowpass=f=5200,aecho=0.8:0.6:70|140|260:0.28|0.2|0.12,volume=0.9',
-  '-codec:a', 'libmp3lame', '-b:a', '96k', 'public/audio/cena.mp3']);
-console.log(`wrote public/audio/cena.mp3 (${TOTAL.toFixed(1)}s loop)`);
+  '-codec:a', 'libmp3lame', '-b:a', '96k', 'public/audio/dinner.mp3']);
+console.log(`wrote public/audio/dinner.mp3 (${TOTAL.toFixed(1)}s loop)`);

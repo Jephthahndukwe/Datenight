@@ -1,10 +1,7 @@
-import { site, derived, type Choice } from '../config/site';
+import { site, fill, type Choice } from '../config/site';
 
 export function whatsappUrl(choice: Choice) {
-  const text = site.whatsapp.messages[choice]
-    .replaceAll('{her}', site.herName)
-    .replaceAll('{when}', `${derived.dateLong}, ${derived.time}`)
-    .replaceAll('{where}', site.restaurant.name);
+  const text = fill(site.whatsapp.messages[choice]);
   return `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(text)}`;
 }
 

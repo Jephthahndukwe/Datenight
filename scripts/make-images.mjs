@@ -45,7 +45,7 @@ for (const img of cfg.images) {
     const base = sharp(src).rotate().resize({ width: w, withoutEnlargement: true });
     const { data, info } = await base
       // one grade for every photo: lift blacks toward burgundy, pull blue out of the highlights
-      .modulate({ saturation: 0.94, brightness: 0.97 })
+      .modulate({ saturation: 0.92, brightness: 1.0 })
       .linear([1.03, 0.94, 0.8], [22, 4, 14])
       .gamma(1.08)
       .raw()
