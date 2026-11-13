@@ -44,7 +44,7 @@ export function burstPetals(onDone: () => void): () => void {
   });
 
   // a few small hearts that float up instead of falling
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 14; i++) {
     petals.push({
       heart: true,
       x: W * (0.12 + Math.random() * 0.76), y: H + 20,
@@ -53,7 +53,7 @@ export function burstPetals(onDone: () => void): () => void {
       flip: 0, vf: 0,
       size: (9 + Math.random() * 7) * unit,
       color: ['#c42b45', '#e8808c', '#d9a441'][i % 3],
-      phase: Math.random() * 6.28, sway: 30, delay: 0.5 + Math.random() * 1.6, life: 4.2 + Math.random() * 1.2,
+      phase: Math.random() * 6.28, sway: 30, delay: 0.3 + Math.random() * 2.0, life: 4.2 + Math.random() * 1.2,
     });
   }
 

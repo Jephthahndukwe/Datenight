@@ -1,31 +1,21 @@
-import type { Choice } from '../config/site';
+const KEY = 'dinner:state:v4';
 
-const KEY = 'dinner:state:v3';
-
-export type Saved = { answer: Choice | null; pickup: string | null };
-
-export function loadState(): Saved {
-  const empty: Saved = { answer: null, pickup: null };
+/** Whether she has already said yes (so a return visit opens straight on the ticket). */
+export function loadAccepted(): boolean {
   try {
     if (new URLSearchParams(location.search).has('reset')) {
       localStorage.removeItem(KEY);
-      return empty;
+      return false;
     }
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return empty;
-    const v = JSON.parse(raw) as { answer?: string; pickup?: unknown };
-    return {
-      answer: v.answer === 'yes' || v.answer === 'obviously' ? v.answer : null,
-      pickup: typeof v.pickup === 'string' && /^\d{2}:\d{2}$/.test(v.pickup) ? v.pickup : null,
-    };
+    return localStorage.getItem(KEY) === 'yes';
   } catch {
-    return empty;
+    return false;
   }
 }
 
-export function saveState(s: Saved) {
+export function saveAccepted() {
   try {
-    localStorage.setItem(KEY, JSON.stringify(s));
+    localStorage.setItem(KEY, 'yes');
   } catch {
     /* private mode etc. */
   }

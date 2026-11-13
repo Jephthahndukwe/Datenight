@@ -1,22 +1,20 @@
 /**
  * ONE FILE TO EDIT.
  * Every personal detail and every word on the page lives here: names, date, place,
- * your note, the pickup times, button labels, thank-you
- * messages, phone number. Nothing in /components needs to be touched.
+ * the question, the runaway "No" lines, your letter, button labels, phone number.
+ * Nothing in /components needs to be touched.
  *
  * After editing, run `npm run og` to regenerate the share preview image
  * (public/og.jpg) with her name on it.
  *
- * Placeholders you can use in any string: {her} {you} {when} {where} {date} {pickup}
+ * Placeholders you can use in any string: {her} {you} {date} {time} {where} {area}
  */
-
-export type Choice = 'yes' | 'obviously';
 
 export const site = {
   /** Her name. */
   herName: 'Naomi',
 
-  /** Your first name. Used in "Tell {you}", the note sign-off and the calendar event. */
+  /** Your first name. Used in "Send to {you}", the letter sign-off and the calendar event. */
   yourName: 'Chika',
 
   /**
@@ -34,76 +32,63 @@ export const site = {
     address: 'Lagos Mainland',
   },
 
-  /** Step 1: the reservation card on the dark opening screen. */
-  arrival: {
-    eyebrow: 'Reservation for',
-    party: 'Table for two',
-    detail: 'One night only',
-    button: 'Come in',
-    /** Small label at the top of every later screen. */
-    headerLabel: 'Reserved for {her}',
+  /** Step 1: the envelope. */
+  envelope: {
+    to: 'For {her}',
+    hint: 'Tap to open',
   },
 
-  /** Step 2: lighting the candle. */
-  candle: {
-    prompt: 'Tap to light the candle',
-    lit: 'There. That’s better.',
-    next: 'Continue',
+  /** Step 2: the question, held up on a sign by the mascot. */
+  question: {
+    sign: '{her}, will you go on a dinner date with me?',
+    yes: 'Yes 💖',
+    no: 'No',
+    /** Shown under the sign before she tries to tap No. */
+    idleLine: 'There is only one right answer 😌',
+    /**
+     * One line per attempt to tap No (the last one repeats). The mascot goes from
+     * pleading, to sweating, to dramatically crying as they pile up.
+     */
+    escapeLines: [
+      'Are you sure? 🥺',
+      'The little flame is begging…',
+      'Wrong button, my queen',
+      'Try the other one 😌',
+      'Okay now you’re just playing',
+      'I can do this all day 😏',
+      'The No button has left the chat',
+    ],
   },
 
-  /** Step 3: your handwritten note. Fades in line by line. */
+  /** Step 3: the celebration. */
+  celebrate: {
+    title: 'SHE SAID YES!! 🎉',
+    sub: 'Best answer. Ever.',
+    next: 'There’s a letter for you 💌',
+  },
+
+  /** Step 4: the letter, typed out after she says yes. */
   note: {
     greeting: '{her},',
     lines: [
-      'I have been thinking about a table for two, a candle, and you sitting across from me.',
-      'So I made a reservation. It is the best table in the house, and it has your name on it.',
-      'But first, my queen, I need your help with one small detail of the plan.',
+      'You said yes, and I have been grinning at my screen like a fool ever since.',
+      'Thank you for giving me an evening of your time. I promise to make every minute of it worth it.',
+      'I am looking forward to your laugh, to long conversations that make us forget the time, and to watching you walk in, my queen, looking exactly like yourself.',
+      'Wear something that makes you feel wonderful. I will be the one trying not to stare.',
     ],
     signoff: 'Yours, {you}',
-    next: 'Continue',
+    skipHint: 'tap to skip the typing',
+    next: 'See our date',
   },
 
-  /**
-   * Step 4: she picks a pickup time. `time` is 24h HH:mm on the dinner date above;
-   * `reaction` is the mascot's cheeky line when she taps it.
-   */
-  pickup: {
-    title: 'When should I pick you up?',
-    subtitle: 'Pick a time. I will be on time, promise.',
-    next: 'Confirm our date',
-    options: [
-      { time: '17:30', reaction: 'Super early. Traffic-proof, smart queen 🚗' },
-      { time: '18:00', reaction: 'Perfect. Plenty of time to look amazing ✨' },
-      { time: '18:15', reaction: 'A quarter past six. Precise. I like it.' },
-      { time: '18:30', reaction: 'Just right. Not early, not late 😌' },
-      { time: '18:45', reaction: 'Cutting it close. I like a little drama 😏' },
-      { time: '19:00', reaction: 'Living dangerously, my queen. Traffic is watching 👀' },
-    ],
-  },
-
-  /** Step 5: the big question. */
-  question: {
-    headline: 'So, my queen… will you have dinner with me?',
-    yesPrimary: 'Yes',
-    yesSecondary: 'Obviously yes',
-    underline: 'I made this easy for you.',
-    easterEgg: "Take your time, the candle's still burning 🕯️",
-  },
-
-  /** Thank-you line shown depending on which button she tapped. */
-  thanks: {
-    yes: 'Perfect. It’s a date, my queen.',
-    obviously: 'I knew you had great taste, my queen.',
-  } satisfies Record<Choice, string>,
-
-  /** Step 6: the confirmation ticket. */
+  /** Step 5: the confirmation ticket. */
   confirm: {
     eyebrow: 'Date confirmed 💌',
     guestLabel: 'Guest',
     party: 'Table for two',
+    line: 'It’s a date, my queen.',
     dateLabel: 'Date',
-    pickupLabel: 'Pickup',
-    dinnerLabel: 'Dinner',
+    timeLabel: 'Time',
     whereLabel: 'Where',
     calendar: 'Add to calendar',
     tell: 'Send to {you}',
@@ -114,17 +99,14 @@ export const site = {
   /** Digits only, with country code, no + or spaces. 15555550123 is a dummy number. */
   whatsapp: {
     number: '15555550123',
-    /** Placeholders: {her} {date} {pickup} */
-    messages: {
-      yes: 'Yes 🥂 I’m in!\n\n📅 {date}\n🕒 Pick me up at {pickup}',
-      obviously: 'Obviously yes 😌\n\n📅 {date}\n🕒 Pick me up at {pickup}',
-    } satisfies Record<Choice, string>,
+    /** Placeholders: {her} {date} {time} {where} {area} */
+    message: 'Yes 💖 I’m in!\n\n📅 {date}\n🕖 {time}\n📍 {where}, {area}',
   },
 
   /** Wording inside the calendar file she downloads. */
   calendar: {
     title: 'Dinner with {you} 🕯️',
-    description: 'Pickup at {pickup}. Dinner at {time}, a table for two at {where}.',
+    description: 'A table for two at {where}, {area}.',
     reminderSameDay: 'Dinner tonight',
     reminderDayBefore: 'Dinner tomorrow',
   },
@@ -166,23 +148,13 @@ export const derived = {
     .toLowerCase(),
 };
 
-/** "6:30pm" for a 24h "18:30" on the dinner date. */
-export function clock(hhmm: string): string {
-  const [h, m] = hhmm.split(':').map(Number);
-  const d = new Date(site.dateTime);
-  d.setHours(h, m, 0, 0);
-  return new Intl.DateTimeFormat(site.locale, { hour: 'numeric', minute: '2-digit', hour12: true }).format(d).replace(/\s/g, '').toLowerCase();
-}
-
-/** Fill {you}, {her}, {when}, {where}, {date}, {time} (and {pickup} etc. when given) in any config string. */
-export function fill(text: string, extra: Record<string, string | number> = {}): string {
-  let out = text
+/** Fill {you}, {her}, {date}, {time}, {where}, {area} in any config string. */
+export function fill(text: string): string {
+  return text
     .replaceAll('{you}', site.yourName)
     .replaceAll('{her}', site.herName)
-    .replaceAll('{when}', `${derived.dateLong}, ${derived.time}`)
     .replaceAll('{date}', derived.dateLong)
     .replaceAll('{time}', derived.time)
-    .replaceAll('{where}', site.restaurant.name);
-  for (const [k, v] of Object.entries(extra)) out = out.replaceAll(`{${k}}`, String(v));
-  return out;
+    .replaceAll('{where}', site.restaurant.name)
+    .replaceAll('{area}', site.restaurant.area);
 }

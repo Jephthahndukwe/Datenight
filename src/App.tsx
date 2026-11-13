@@ -1,64 +1,50 @@
 import { useCallback, useState } from 'react';
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m } from 'framer-motion';
-import { clock, fill, site, type Choice } from './config/site';
+import { site } from './config/site';
 import { getTier } from './lib/capabilities';
 import { burstPetals } from './lib/petals';
-import { notifyAnswer } from './lib/share';
-import { loadState, saveState } from './lib/storage';
+import { notifyAccepted } from './lib/share';
+import { loadAccepted, saveAccepted } from './lib/storage';
 import { Bokeh } from './components/ui/Bokeh';
 import { MusicToggle } from './components/ui/MusicToggle';
-import { Arrival } from './components/sections/Arrival';
-import { Candle } from './components/sections/Candle';
-import { Note } from './components/sections/Note';
-import { Pickup } from './components/sections/Pickup';
+import { Envelope } from './components/sections/Envelope';
 import { Question } from './components/sections/Question';
+import { Celebrate } from './components/sections/Celebrate';
+import { Note } from './components/sections/Note';
 import { Confirmed } from './components/sections/Confirmed';
 
-type Step = 'arrival' | 'candle' | 'note' | 'pickup' | 'question' | 'done';
-const steps: Step[] = ['arrival', 'candle', 'note', 'pickup', 'question', 'done'];
+type Step = 'envelope' | 'question' | 'celebrate' | 'note' | 'done';
+const steps: Step[] = ['envelope', 'question', 'celebrate', 'note', 'done'];
 
-/** Where to start: a saved answer jumps straight to the confirmation; ?step=pickup etc. is handy for previewing. */
-function initial(saved: ReturnType<typeof loadState>): { step: Step; answer: Choice | null } {
+/** Where to start: a returning "yes" jumps to the ticket; ?step=question etc. is handy for previewing. */
+function initialStep(accepted: boolean): Step {
   const q = new URLSearchParams(location.search).get('step') as Step | null;
-  if (q && steps.includes(q)) return { step: q, answer: q === 'done' ? (saved.answer ?? 'yes') : saved.answer };
-  if (saved.answer) return { step: 'done', answer: saved.answer };
-  return { step: 'arrival', answer: null };
+  if (q && steps.includes(q)) return q;
+  return accepted ? 'done' : 'envelope';
 }
 
 export function App() {
   const tier = getTier();
   const reduced = tier.reducedMotion;
-  const [saved] = useState(loadState);
-  const [start] = useState(() => initial(saved));
-  const [step, setStep] = useState<Step>(start.step);
-  const [answer, setAnswer] = useState<Choice | null>(start.answer);
-  const [pickup, setPickup] = useState<string | null>(saved.pickup);
+  const [accepted] = useState(loadAccepted);
+  const [start] = useState(() => initialStep(accepted));
+  const [step, setStep] = useState<Step>(start);
   const [fresh, setFresh] = useState(false);
-  // the room is dark until the candle is lit; later screens (or a returning visit) start already lit
-  const [lit, setLit] = useState(steps.indexOf(start.step) > 1);
+  // the room is dark until the envelope is opened; everything after (or a return visit) is already lit
+  const [lit, setLit] = useState(start !== 'envelope');
 
   const next = useCallback(() => setStep((s) => steps[Math.min(steps.indexOf(s) + 1, steps.length - 1)]), []);
 
-  const changePickup = (t: string) => {
-    setPickup(t);
-    saveState({ answer, pickup: t });
-  };
-
-  // a visitor who jumps straight to the end (?step=done) still gets a sensible time
-  const chosen = pickup ?? site.pickup.options[0].time;
-
-  const answerNow = (c: Choice) => {
-    setAnswer(c);
-    setFresh(true);
-    saveState({ answer: c, pickup: chosen });
-    notifyAnswer(c, clock(chosen));
+  const sayYes = () => {
+    saveAccepted();
+    notifyAccepted();
     if (!reduced) burstPetals(() => {});
-    if (navigator.vibrate) navigator.vibrate(20);
-    setStep('done');
+    if (navigator.vibrate) navigator.vibrate([20, 40, 20]);
+    setStep('celebrate');
   };
 
   const dark = !lit;
-  const origin = '50% 42%';
+  const origin = '50% 40%';
 
   return (
     <LazyMotion features={domAnimation} strict>
@@ -68,34 +54,18 @@ export function App() {
           {!reduced && <div className="opacity-60"><Bokeh /></div>}
           <div aria-hidden className="absolute inset-0" style={{ background: 'radial-gradient(90% 60% at 50% 100%, rgba(67,16,34,0.55), transparent 70%)' }} />
 
-          {/* the lights come up: paper spreads outwards from the flame */}
+          {/* the lights come up: paper spreads outwards from the envelope */}
           <m.div
             aria-hidden
             className="paper absolute inset-0"
             initial={false}
             animate={{ clipPath: lit ? `circle(150% at ${origin})` : `circle(0% at ${origin})` }}
-            transition={{ duration: reduced ? 0.6 : 3.0, delay: reduced ? 0 : 0.7, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: reduced ? 0.6 : 2.6, delay: reduced ? 0 : 0.5, ease: [0.4, 0, 0.2, 1] }}
           />
 
           <div className="relative z-10 flex h-full flex-col">
-            <header className="flex h-14 shrink-0 items-center justify-between px-3 pt-[env(safe-area-inset-top)]">
-              <span className="h-10 w-10" aria-hidden />
-              <AnimatePresence>
-                {step !== 'arrival' && (
-                  <m.div key="label" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.4 }} className="flex flex-col items-center gap-1.5">
-                    <p className={`text-[10px] uppercase tracking-[0.42em] transition-colors duration-[2400ms] ${dark ? 'text-gold-300/80' : 'text-gold-600'}`}>{fill(site.arrival.headerLabel)}</p>
-                    {/* step indicator: candle, note, pickup, question */}
-                    <div className="flex h-1.5 items-center gap-1.5" aria-hidden>
-                      {(['candle', 'note', 'pickup', 'question'] as Step[]).map((st) => {
-                        const idx = steps.indexOf(st);
-                        const cur = steps.indexOf(step);
-                        return <span key={st} className={`h-1.5 rounded-full transition-all duration-700 ${cur === idx ? `w-5 ${dark ? 'bg-gold-300' : 'bg-ruby-600'}` : `w-1.5 ${cur > idx ? (dark ? 'bg-gold-300/60' : 'bg-ruby-600/50') : dark ? 'bg-gold-300/25' : 'bg-ink/20'}`}`} />;
-                      })}
-                    </div>
-                  </m.div>
-                )}
-              </AnimatePresence>
-              {site.music.enabled ? <MusicToggle tone={dark ? 'dark' : 'light'} /> : <span className="h-10 w-10" aria-hidden />}
+            <header className="flex h-14 shrink-0 items-center justify-end px-3 pt-[env(safe-area-inset-top)]">
+              {site.music.enabled && <MusicToggle tone={dark ? 'dark' : 'light'} />}
             </header>
 
             <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
@@ -108,12 +78,11 @@ export function App() {
                   transition={{ duration: 0.8, ease: [0.22, 0.61, 0.36, 1] }}
                   className="mx-auto flex min-h-full w-full max-w-md flex-col items-center justify-center px-5 pb-8 pt-2"
                 >
-                  {step === 'arrival' && <Arrival onNext={next} reduced={reduced} />}
-                  {step === 'candle' && <Candle lit={lit} onLight={() => setLit(true)} onNext={next} reduced={reduced} />}
-                  {step === 'note' && <Note onNext={next} reduced={reduced} />}
-                  {step === 'pickup' && <Pickup value={pickup} onChange={changePickup} onNext={next} reduced={reduced} />}
-                  {step === 'question' && <Question onAnswer={answerNow} reduced={reduced} />}
-                  {step === 'done' && answer && <Confirmed choice={answer} pickup={chosen} reduced={reduced} fresh={fresh} />}
+                  {step === 'envelope' && <Envelope onOpen={() => setLit(true)} onNext={next} reduced={reduced} />}
+                  {step === 'question' && <Question onYes={sayYes} reduced={reduced} />}
+                  {step === 'celebrate' && <Celebrate onNext={() => { setFresh(true); next(); }} reduced={reduced} />}
+                  {step === 'note' && <Note onNext={() => { setFresh(true); next(); }} reduced={reduced} />}
+                  {step === 'done' && <Confirmed reduced={reduced} fresh={fresh} />}
                 </m.div>
               </AnimatePresence>
             </main>

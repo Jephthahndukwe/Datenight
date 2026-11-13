@@ -1,60 +1,108 @@
-import { useEffect, useRef, useState } from 'react';
-import { m } from 'framer-motion';
-import { site, type Choice } from '../../config/site';
-import { ClinkArt } from '../ui/Illustrations';
+import { useRef, useState } from 'react';
+import { AnimatePresence, m } from 'framer-motion';
+import { fill, site } from '../../config/site';
+import { MascotArt, type Mood } from '../ui/Illustrations';
+import { RunawayButton } from '../ui/RunawayButton';
 
-const yes =
-  'btn-pulse wobble no-callout inline-flex h-14 w-[13.5rem] items-center justify-center rounded-full border border-ruby-700/60 bg-gradient-to-b from-ruby-500 to-ruby-700 px-8 font-display text-[1.4rem] font-semibold tracking-wide text-cream-50 shadow-[0_10px_26px_-12px_rgba(126,18,38,0.9)] transition-[filter] duration-300 hover:brightness-110 active:scale-[0.97]';
+const ease = [0.22, 0.61, 0.36, 1] as const;
 
-/** 5. The question. Two yeses, equally lovable. */
-export function Question({ onAnswer, reduced }: { onAnswer: (c: Choice) => void; reduced: boolean }) {
-  const [egg, setEgg] = useState(false);
-  const hold = useRef<number>(0);
-  const idle = useRef<number>(0);
+/** Pleading, then sweating, then crying: the mascot's mood follows how many times No has run. */
+const moodFor = (n: number): Mood => (n === 0 ? 'happy' : n === 1 ? 'plead' : n === 2 ? 'sweat' : 'cry');
 
-  useEffect(() => {
-    idle.current = window.setTimeout(() => setEgg(true), 10000);
-    return () => { window.clearTimeout(idle.current); window.clearTimeout(hold.current); };
-  }, []);
+/** 2. The mascot holds up a sign. Yes is easy. No cannot be caught. */
+export function Question({ onYes, reduced }: { onYes: () => void; reduced: boolean }) {
+  const [escapes, setEscapes] = useState(0);
+  const hud = useRef<HTMLDivElement>(null);
+  const yes = useRef<HTMLButtonElement>(null);
+  const slot = useRef<HTMLSpanElement>(null);
 
-  const startHold = () => { window.clearTimeout(hold.current); hold.current = window.setTimeout(() => setEgg(true), 2800); };
-  const stopHold = () => window.clearTimeout(hold.current);
-  const ease = [0.22, 0.61, 0.36, 1] as const;
-  const rise = (delay: number) => ({
-    initial: reduced ? (false as const) : { opacity: 0, y: 16 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 1.4, delay: reduced ? 0 : delay, ease },
-  });
+  const mood = moodFor(escapes);
+  const lines = site.question.escapeLines;
+  const line = escapes === 0 ? site.question.idleLine : lines[Math.min(escapes - 1, lines.length - 1)];
+  // Yes grows a little and glows more with every escape (capped, so No always has somewhere to run)
+  const grow = Math.min(escapes, 5);
 
   return (
     <div className="flex w-full max-w-[350px] flex-col items-center text-center">
-      <m.div {...rise(0.2)}>
-        <ClinkArt className="h-[112px] w-auto text-gold-600" />
-      </m.div>
-      <m.h2 {...rise(0.8)} className="mt-4 font-display text-[clamp(32px,9.2vw,44px)] font-medium leading-[1.1] text-ink [text-wrap:balance]">
-        {site.question.headline}
-      </m.h2>
+      <div ref={hud} className="flex w-full flex-col items-center">
+        {/* mascot + sign */}
+        <m.div
+          initial={reduced ? false : { opacity: 0, y: 26 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.3, ease }}
+          className="relative w-[min(86vw,310px)]"
+        >
+          <div className={`relative z-0 mx-auto h-[120px] w-[100px] ${mood === 'sweat' || mood === 'cry' ? 'shiver' : ''}`}>
+            <m.div
+              key={mood}
+              initial={false}
+              animate={reduced ? undefined : { scale: [1, 0.9, 1.06, 1] }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              className="h-full w-full"
+            >
+              <MascotArt mood={mood} className="h-full w-full" />
+            </m.div>
+          </div>
+          <div className="card-paper relative z-10 -mt-4 rounded-[16px] border-2 border-gold-600/55 px-5 pb-6 pt-7">
+            <svg viewBox="0 0 24 24" className="absolute left-3 top-3 h-4 w-4 text-ruby-600/70" fill="currentColor" aria-hidden><path d="M12 21C3 15 4 6.500 9 6.500c2 0 3 1.500 3 2.500 0-1 1-2.500 3-2.500 5 0 6 8.500-3 14.500Z" /></svg>
+            <svg viewBox="0 0 24 24" className="absolute right-3 top-3 h-4 w-4 text-ruby-600/70" fill="currentColor" aria-hidden><path d="M12 21C3 15 4 6.500 9 6.500c2 0 3 1.500 3 2.500 0-1 1-2.500 3-2.500 5 0 6 8.500-3 14.500Z" /></svg>
+            <h2 className="font-display text-[clamp(29px,8.6vw,36px)] font-medium leading-[1.1] text-ink [text-wrap:balance]">{fill(site.question.sign)}</h2>
+          </div>
+          {/* the mascot's hands, holding the top of the sign */}
+          <svg viewBox="0 0 310 200" className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[200px] w-full" fill="none" aria-hidden>
+            <g stroke="#ff9d3c" strokeWidth="6" strokeLinecap="round">
+              <path d="M127 88Q104 90 100 114" /><path d="M183 88Q206 90 210 114" />
+            </g>
+            <circle cx="100" cy="118" r="8" fill="#ffb347" stroke="#d9962e" strokeWidth="1.200" />
+            <circle cx="210" cy="118" r="8" fill="#ffb347" stroke="#d9962e" strokeWidth="1.200" />
+          </svg>
+        </m.div>
+
+        {/* the line under the sign: fixed height, so nothing shifts when it changes */}
+        <div className="mt-5 h-9 w-full" aria-live="polite">
+          <AnimatePresence mode="wait" initial={false}>
+            <m.p
+              key={line}
+              initial={reduced ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`${escapes === 0 ? 'font-display text-[1.1rem] italic text-ink-soft' : 'font-hand text-[1.6rem] leading-none text-ruby-600'}`}
+            >
+              {line}
+            </m.p>
+          </AnimatePresence>
+        </div>
+      </div>
 
       <m.div
-        {...rise(2.0)}
-        className="mt-9 flex w-full flex-col items-center gap-5"
-        onPointerEnter={startHold}
-        onPointerLeave={stopHold}
-        onPointerDown={startHold}
-        onPointerUp={stopHold}
-        onPointerCancel={stopHold}
-        onContextMenu={(e) => e.preventDefault()}
+        initial={reduced ? false : { opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.1, delay: reduced ? 0 : 0.9, ease }}
+        className="mt-5 flex items-center gap-4"
       >
-        <button type="button" className={yes} onClick={() => onAnswer('yes')}>{site.question.yesPrimary}</button>
-        <button type="button" className={`${yes} offset`} onClick={() => onAnswer('obviously')}>{site.question.yesSecondary}</button>
+        <m.button
+          ref={yes}
+          type="button"
+          onClick={onYes}
+          animate={{ scale: 1 + grow * 0.07 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+          style={{ ['--g' as string]: grow }}
+          className="yes-btn no-callout inline-flex h-14 w-44 items-center justify-center rounded-full border border-ruby-700/60 bg-gradient-to-b from-ruby-500 to-ruby-700 font-display text-[1.45rem] font-semibold tracking-wide text-cream-50 shadow-[0_10px_26px_-12px_rgba(126,18,38,0.9)] active:scale-[0.97]"
+        >
+          {site.question.yes}
+        </m.button>
+        <span ref={slot} aria-hidden className="block h-12 w-24" />
       </m.div>
 
-      <m.p {...rise(2.8)} className="mt-7 font-display text-[1.15rem] italic text-ink-soft">{site.question.underline}</m.p>
-      <div className="mt-4 h-8" aria-live="polite">
-        <m.p initial={false} animate={{ opacity: egg ? 1 : 0, y: egg ? 0 : 6 }} transition={{ duration: 1.6 }} className="font-hand text-[1.3rem] text-ruby-600">
-          {site.question.easterEgg}
-        </m.p>
-      </div>
+      <RunawayButton
+        label={site.question.no}
+        slotRef={slot}
+        avoidRefs={[hud, yes]}
+        onEscape={setEscapes}
+        reduced={reduced}
+        showAfter={reduced ? 0 : 1.6}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { site, derived, fill, clock } from '../config/site';
+import { site, derived, fill } from '../config/site';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -23,13 +23,9 @@ function fold(line: string) {
   return out.join('\r\n');
 }
 
-/** The event starts when she is picked up and ends when dinner does. */
-export function buildIcs(pickup: string): string {
-  const dinner = new Date(site.dateTime);
-  const [h, m] = pickup.split(':').map(Number);
-  const start = new Date(dinner);
-  start.setHours(h, m, 0, 0);
-  const end = new Date(dinner.getTime() + site.durationMinutes * 60_000);
+export function buildIcs(): string {
+  const start = new Date(site.dateTime);
+  const end = new Date(start.getTime() + site.durationMinutes * 60_000);
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -43,7 +39,7 @@ export function buildIcs(pickup: string): string {
     `DTEND:${fmtLocal(end)}`,
     `SUMMARY:${esc(fill(site.calendar.title))}`,
     `LOCATION:${esc(`${site.restaurant.name}, ${site.restaurant.area}, ${site.restaurant.address}`)}`,
-    `DESCRIPTION:${esc(fill(site.calendar.description, { pickup: clock(pickup) }))}`,
+    `DESCRIPTION:${esc(fill(site.calendar.description))}`,
     'BEGIN:VALARM',
     'TRIGGER:-PT2H',
     'ACTION:DISPLAY',
@@ -60,8 +56,8 @@ export function buildIcs(pickup: string): string {
   return lines.map(fold).join('\r\n') + '\r\n';
 }
 
-export function downloadIcs(pickup: string) {
-  const blob = new Blob([buildIcs(pickup)], { type: 'text/calendar;charset=utf-8' });
+export function downloadIcs() {
+  const blob = new Blob([buildIcs()], { type: 'text/calendar;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
