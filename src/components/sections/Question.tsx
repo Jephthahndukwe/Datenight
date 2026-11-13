@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { AnimatePresence, m } from 'framer-motion';
 import { fill, site } from '../../config/site';
 import { MascotArt, type Mood } from '../ui/Illustrations';
@@ -7,7 +7,41 @@ import { RunawayButton } from '../ui/RunawayButton';
 const ease = [0.22, 0.61, 0.36, 1] as const;
 
 /** Pleading, then sweating, then crying: the mascot's mood follows how many times No has run. */
-const moodFor = (n: number): Mood => (n === 0 ? 'happy' : n === 1 ? 'plead' : n === 2 ? 'sweat' : 'cry');
+const moodFor = (n: number): Mood => {
+  if (n === 0) return 'happy';
+  if (n <= 3) return (['plead', 'sweat', 'cry'] as const)[n - 1];
+  return (['cry', 'plead', 'sweat', 'cry'] as const)[n % 4]; // after the first three, keep the drama varied
+};
+
+const shuffled = <T,>(a: readonly T[]): T[] => {
+  const out = [...a];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+};
+
+/** The n-th line (1-based): the opening lines in order, then the pool shuffled, endlessly, with no back-to-back repeats. */
+function useEscapeLines() {
+  const { opening, pool } = site.question.escape;
+  const rounds = useRef<string[][]>([]);
+  return useMemo(
+    () => (n: number) => {
+      if (n <= opening.length) return opening[n - 1];
+      const k = n - opening.length - 1;
+      const round = Math.floor(k / pool.length);
+      while (rounds.current.length <= round) {
+        const next = shuffled(pool);
+        const prev = rounds.current[rounds.current.length - 1];
+        if (prev && next[0] === prev[prev.length - 1]) next.push(next.shift()!);
+        rounds.current.push(next);
+      }
+      return rounds.current[round][k % pool.length];
+    },
+    [opening, pool],
+  );
+}
 
 /** 2. The mascot holds up a sign. Yes is easy. No cannot be caught. */
 export function Question({ onYes, reduced }: { onYes: () => void; reduced: boolean }) {
@@ -17,8 +51,8 @@ export function Question({ onYes, reduced }: { onYes: () => void; reduced: boole
   const slot = useRef<HTMLSpanElement>(null);
 
   const mood = moodFor(escapes);
-  const lines = site.question.escapeLines;
-  const line = escapes === 0 ? site.question.idleLine : lines[Math.min(escapes - 1, lines.length - 1)];
+  const lineFor = useEscapeLines();
+  const line = escapes === 0 ? site.question.idleLine : lineFor(escapes);
   // Yes grows a little and glows more with every escape (capped, so No always has somewhere to run)
   const grow = Math.min(escapes, 5);
 
@@ -59,7 +93,7 @@ export function Question({ onYes, reduced }: { onYes: () => void; reduced: boole
         </m.div>
 
         {/* the line under the sign: fixed height, so nothing shifts when it changes */}
-        <div className="mt-5 h-9 w-full" aria-live="polite">
+        <div className="mt-4 flex h-[3.4rem] w-full items-start justify-center" aria-live="polite">
           <AnimatePresence mode="wait" initial={false}>
             <m.p
               key={line}
@@ -67,7 +101,7 @@ export function Question({ onYes, reduced }: { onYes: () => void; reduced: boole
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className={`${escapes === 0 ? 'font-display text-[1.1rem] italic text-ink-soft' : 'font-hand text-[1.6rem] leading-none text-ruby-600'}`}
+              className={`${escapes === 0 ? 'font-display text-[1.1rem] italic text-ink-soft' : 'max-w-[24ch] font-hand text-[1.55rem] leading-[1.02] text-ruby-600'}`}
             >
               {line}
             </m.p>

@@ -10,6 +10,8 @@
  * Placeholders you can use in any string: {her} {you} {date} {time}
  */
 
+import { opening, pool } from './noLines';
+
 export const site = {
   /** Her name. */
   herName: 'Naomi',
@@ -40,18 +42,10 @@ export const site = {
     /** Shown under the sign before she tries to tap No. */
     idleLine: 'There is only one right answer 😌',
     /**
-     * One line per attempt to tap No (the last one repeats). The mascot goes from
-     * pleading, to sweating, to dramatically crying as they pile up.
+     * What the mascot says each time she tries to tap No: 580 lines in config/noLines.ts, so it never
+     * runs out. The first few play in order, the rest are shuffled (and reshuffled if she gets through them all).
      */
-    escapeLines: [
-      'Are you sure? 🥺',
-      'The little flame is begging…',
-      'Wrong button, my queen',
-      'Try the other one 😌',
-      'Okay now you’re just playing',
-      'I can do this all day 😏',
-      'The No button has left the chat',
-    ],
+    escape: { opening, pool },
   },
 
   /** Step 3: the celebration. */
