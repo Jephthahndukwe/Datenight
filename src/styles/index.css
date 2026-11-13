@@ -38,10 +38,6 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .no-callout { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
 
-/* hide scrollbars on swipeable rows and lists */
-.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-
 /* ---------- paper: warm cream, a soft burgundy vignette and a fine fibre grain ---------- */
 .paper {
   background-color: #f6ecd9;
@@ -118,3 +114,13 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 @media (prefers-reduced-motion: reduce) {
   .flame, .candle-glow, .bokeh, .wobble, .btn-pulse::after, .ring-hint { animation: none !important; }
 }
+
+/* the mascot dances: a little sway, a hop and a squash, never frantic */
+.dance { transform-origin: 50% 100%; animation: dance 1.8s ease-in-out infinite; will-change: transform; }
+@keyframes dance {
+  0%, 100% { transform: translateY(0) rotate(-7deg) scale(1, 1); }
+  25% { transform: translateY(-9px) rotate(0deg) scale(0.96, 1.05); }
+  50% { transform: translateY(0) rotate(7deg) scale(1.04, 0.96); }
+  75% { transform: translateY(-9px) rotate(0deg) scale(0.96, 1.05); }
+}
+@media (prefers-reduced-motion: reduce) { .dance { animation: none !important; } }

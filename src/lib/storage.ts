@@ -1,12 +1,11 @@
 import type { Choice } from '../config/site';
-import { categories, type Order } from '../config/menu';
 
-const KEY = 'dinner:state:v2';
+const KEY = 'dinner:state:v3';
 
-export type Saved = { answer: Choice | null; order: Order };
+export type Saved = { answer: Choice | null; pickup: string | null };
 
 export function loadState(): Saved {
-  const empty: Saved = { answer: null, order: {} };
+  const empty: Saved = { answer: null, pickup: null };
   try {
     if (new URLSearchParams(location.search).has('reset')) {
       localStorage.removeItem(KEY);
@@ -14,13 +13,11 @@ export function loadState(): Saved {
     }
     const raw = localStorage.getItem(KEY);
     if (!raw) return empty;
-    const v = JSON.parse(raw) as { answer?: string; order?: Record<string, unknown> };
-    const order: Order = {};
-    for (const c of categories) {
-      const ids = v.order?.[c.id];
-      if (Array.isArray(ids)) order[c.id] = ids.filter((x): x is string => typeof x === 'string').slice(0, c.limit);
-    }
-    return { answer: v.answer === 'yes' || v.answer === 'obviously' ? v.answer : null, order };
+    const v = JSON.parse(raw) as { answer?: string; pickup?: unknown };
+    return {
+      answer: v.answer === 'yes' || v.answer === 'obviously' ? v.answer : null,
+      pickup: typeof v.pickup === 'string' && /^\d{2}:\d{2}$/.test(v.pickup) ? v.pickup : null,
+    };
   } catch {
     return empty;
   }

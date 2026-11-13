@@ -1,4 +1,4 @@
-import { site, derived, fill } from '../config/site';
+import { site, derived, fill, clock } from '../config/site';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -9,7 +9,7 @@ function fmtLocal(d: Date) {
 function fmtUtc(d: Date) {
   return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
 }
-const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
 
 /** RFC 5545 line folding at 75 octets (approximated with characters; fine for our ASCII-ish copy). */
 function fold(line: string) {
@@ -23,9 +23,13 @@ function fold(line: string) {
   return out.join('\r\n');
 }
 
-export function buildIcs(menu = ''): string {
-  const start = new Date(site.dateTime);
-  const end = new Date(start.getTime() + site.durationMinutes * 60_000);
+/** The event starts when she is picked up and ends when dinner does. */
+export function buildIcs(pickup: string): string {
+  const dinner = new Date(site.dateTime);
+  const [h, m] = pickup.split(':').map(Number);
+  const start = new Date(dinner);
+  start.setHours(h, m, 0, 0);
+  const end = new Date(dinner.getTime() + site.durationMinutes * 60_000);
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -38,8 +42,8 @@ export function buildIcs(menu = ''): string {
     `DTSTART:${fmtLocal(start)}`,
     `DTEND:${fmtLocal(end)}`,
     `SUMMARY:${esc(fill(site.calendar.title))}`,
-    `LOCATION:${esc(`${site.restaurant.name}, ${site.restaurant.address}`)}`,
-    `DESCRIPTION:${esc(fill(site.calendar.description, { menu: menu ? '\n' + menu : 'chef’s choice' }))}`,
+    `LOCATION:${esc(`${site.restaurant.name}, ${site.restaurant.area}, ${site.restaurant.address}`)}`,
+    `DESCRIPTION:${esc(fill(site.calendar.description, { pickup: clock(pickup) }))}`,
     'BEGIN:VALARM',
     'TRIGGER:-PT2H',
     'ACTION:DISPLAY',
@@ -56,8 +60,8 @@ export function buildIcs(menu = ''): string {
   return lines.map(fold).join('\r\n') + '\r\n';
 }
 
-export function downloadIcs(menu = '') {
-  const blob = new Blob([buildIcs(menu)], { type: 'text/calendar;charset=utf-8' });
+export function downloadIcs(pickup: string) {
+  const blob = new Blob([buildIcs(pickup)], { type: 'text/calendar;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

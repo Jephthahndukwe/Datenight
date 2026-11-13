@@ -1,18 +1,16 @@
 import { m } from 'framer-motion';
-import { fill, derived, site, type Choice } from '../../config/site';
-import { formatPrice, orderGroups, orderText, orderTotal, type Order } from '../../config/menu';
+import { clock, derived, fill, site, type Choice } from '../../config/site';
 import { downloadIcs } from '../../lib/ics';
 import { whatsappUrl } from '../../lib/share';
 import { Button, LinkButton } from '../ui/Button';
-import { RoseArt } from '../ui/Illustrations';
+import { MascotArt } from '../ui/Illustrations';
 import { Ornament } from '../ui/Ornament';
 
-/** 6. Reservation confirmed, with her name, the date and her own menu. */
-export function Confirmed({ choice, order, reduced, fresh }: { choice: Choice; order: Order; reduced: boolean; fresh: boolean }) {
+/** 5. Date confirmed: the ticket, with a dancing mascot. */
+export function Confirmed({ choice, pickup, reduced, fresh }: { choice: Choice; pickup: string; reduced: boolean; fresh: boolean }) {
   const ease = [0.22, 0.61, 0.36, 1] as const;
-  const groups = orderGroups(order);
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${site.restaurant.name} ${site.restaurant.address}`)}`;
-  const delay = fresh && !reduced ? 1.2 : 0; // let the petals fly first, then the card rises
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${site.restaurant.name} ${site.restaurant.area} ${site.restaurant.address}`)}`;
+  const delay = fresh && !reduced ? 1.2 : 0; // let the petals fly first, then the ticket rises
   const show = (extra: number) => ({
     initial: fresh && !reduced ? { opacity: 0, y: 14 } : (false as const),
     animate: { opacity: 1, y: 0 },
@@ -28,7 +26,9 @@ export function Confirmed({ choice, order, reduced, fresh }: { choice: Choice; o
     >
       <div className="card-paper relative w-full rounded-[8px] p-[9px]">
         <div className="rounded-[4px] border border-gold-600/45 px-5 pb-6 pt-6 text-center">
-          <RoseArt className="mx-auto h-[52px] w-auto text-ruby-600" />
+          <div className="dance mx-auto h-[84px] w-[70px]">
+            <MascotArt className="h-full w-full" />
+          </div>
           <m.div
             aria-hidden
             initial={fresh && !reduced ? { opacity: 0, scale: 1.7, rotate: -4 } : false}
@@ -46,52 +46,35 @@ export function Confirmed({ choice, order, reduced, fresh }: { choice: Choice; o
           <Ornament className="mx-auto mt-3 w-32" tone="ink" />
 
           <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-4 text-left">
-            <div>
-              <dt className="text-[9px] uppercase tracking-[0.34em] text-ink-soft">{site.confirm.dateLabel}</dt>
-              <dd className="mt-1 font-display text-[1.25rem] font-medium leading-tight text-ink">{derived.dateLong}</dd>
-            </div>
-            <div>
-              <dt className="text-[9px] uppercase tracking-[0.34em] text-ink-soft">{site.confirm.timeLabel}</dt>
-              <dd className="mt-1 font-display text-[1.25rem] font-medium leading-tight text-ink">{derived.time}</dd>
-            </div>
             <div className="col-span-2">
+              <dt className="text-[9px] uppercase tracking-[0.34em] text-ink-soft">{site.confirm.dateLabel}</dt>
+              <dd className="mt-1 font-display text-[1.45rem] font-medium leading-tight text-ink">{derived.dateLong}</dd>
+            </div>
+            <div>
+              <dt className="text-[9px] uppercase tracking-[0.34em] text-ink-soft">{site.confirm.pickupLabel}</dt>
+              <dd className="mt-1 font-display text-[1.45rem] font-medium leading-tight text-ruby-600">{clock(pickup)}</dd>
+            </div>
+            <div>
+              <dt className="text-[9px] uppercase tracking-[0.34em] text-ink-soft">{site.confirm.dinnerLabel}</dt>
+              <dd className="mt-1 font-display text-[1.45rem] font-medium leading-tight text-ink">{derived.time}</dd>
+            </div>
+            <div className="col-span-2 border-t border-dashed border-gold-600/45 pt-3">
               <dt className="text-[9px] uppercase tracking-[0.34em] text-ink-soft">{site.confirm.whereLabel}</dt>
-              <dd className="mt-1 font-display text-[1.25rem] font-medium leading-tight text-ink">{site.restaurant.name}</dd>
+              <dd className="mt-1 font-display text-[1.3rem] font-medium leading-tight text-ink">{site.restaurant.name}, {site.restaurant.area}</dd>
               <dd>
                 <a href={mapsUrl} target="_blank" rel="noreferrer" className="font-sans text-[12px] text-ink-soft underline decoration-gold-600/50 underline-offset-4">{site.restaurant.address}</a>
               </dd>
             </div>
-            {groups.length > 0 && (
-              <div className="col-span-2 border-t border-dashed border-gold-600/45 pt-3">
-                <dt className="text-[9px] uppercase tracking-[0.34em] text-ink-soft">{site.confirm.menuLabel}</dt>
-                <dd className="mt-2 space-y-3">
-                  {groups.map((g) => (
-                    <div key={g.category.id}>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-gold-600">{g.category.label}</p>
-                      {g.items.map((it) => (
-                        <p key={it.id} className="mt-0.5 flex items-baseline justify-between gap-3 font-display text-[1.08rem] leading-tight text-ink">
-                          <span className="font-medium">{it.name}</span>
-                          {site.menu.showPrices && !it.special && <span className="font-sans text-[11px] text-ink-soft">{formatPrice(it.price)}</span>}
-                        </p>
-                      ))}
-                    </div>
-                  ))}
-                  {site.menu.showPrices && (
-                    <p className="flex justify-between border-t border-dashed border-gold-600/45 pt-2 font-display text-[1.1rem] text-ink"><span>{site.menu.total}</span><span className="font-semibold">{formatPrice(orderTotal(order))}</span></p>
-                  )}
-                </dd>
-              </div>
-            )}
           </dl>
         </div>
       </div>
 
       <m.div {...show(0.9)} className="mt-6 flex w-full flex-col items-center gap-3">
-        <Button className="w-full" onClick={() => downloadIcs(orderText(order))}>
+        <Button className="w-full" onClick={() => downloadIcs(pickup)}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden><rect x="3.5" y="5" width="17" height="15" rx="2.5" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg>
           {site.confirm.calendar}
         </Button>
-        <LinkButton className="w-full" href={whatsappUrl(choice, order)} target="_blank" rel="noreferrer">
+        <LinkButton className="w-full" href={whatsappUrl(choice, pickup)} target="_blank" rel="noreferrer">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 4.54 0 8.24 3.7 8.24 8.24s-3.7 8.24-8.24 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.23-.16-.48-.29z" /></svg>
           {fill(site.confirm.tell)}
         </LinkButton>

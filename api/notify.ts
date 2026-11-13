@@ -28,7 +28,7 @@ export async function POST(request: Request): Promise<Response> {
   const origin = request.headers.get('origin');
   if (origin && new URL(origin).host !== new URL(request.url).host) return json(403, { error: 'forbidden' });
 
-  let body: { choice?: string; her?: string; menu?: string; at?: string } = {};
+  let body: { choice?: string; her?: string; pickup?: string; at?: string } = {};
   try {
     body = await request.json();
   } catch {
@@ -38,7 +38,7 @@ export async function POST(request: Request): Promise<Response> {
   if (!choice) return json(400, { error: 'bad choice' });
 
   const her = String(body.her ?? 'She').slice(0, 60).replace(/[<>&"]/g, '');
-  const menu = String(body.menu ?? '').slice(0, 600).replace(/[<>&"]/g, '');
+  const pickup = String(body.pickup ?? '').slice(0, 20).replace(/[<>&"]/g, '');
   const when = new Date().toUTCString();
   const from = process.env.NOTIFY_FROM_EMAIL || 'Dinner for Two <onboarding@resend.dev>';
 
@@ -51,7 +51,7 @@ export async function POST(request: Request): Promise<Response> {
       subject: `${her} said yes 🕯️`,
       html: `<div style="font-family:Georgia,serif;font-size:18px;line-height:1.5;color:#2c0b19">
         <p><strong>${her}</strong> just tapped ${LABEL[choice]}.</p>
-        ${menu ? `<p>Her order:<br><strong>${menu.replace(/\n/g, '<br>')}</strong></p>` : ''}
+        ${pickup ? `<p>Pickup time: <strong>${pickup}</strong></p>` : ''}
         <p style="color:#7b2140">Time to pick something to wear.</p>
         <p style="font-size:13px;color:#888">${when}</p></div>`,
     }),

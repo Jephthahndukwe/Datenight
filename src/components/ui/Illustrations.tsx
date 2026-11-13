@@ -93,17 +93,3 @@ export function ClinkArt({ className = '', strokeWidth = 1.3 }: P) {
     </Svg>
   );
 }
-
-/* ---------- a rose (60 x 110) ---------- */
-
-export function RoseArt({ className = '', strokeWidth = 1.3 }: P) {
-  return (
-    <Svg viewBox="0 0 60 110" className={className} strokeWidth={strokeWidth}>
-      <path d="M30 16c-9 0-15 7-14 15 1 8 10 13 17 9 6-4 4-12-3-12-4 0-6 4-3 6" />
-      <path d="M16 31c-6-7-3-19 10-21 11-2 22 4 20 16-1 9-8 17-17 18" />
-      <path d="M18 38c4 6 10 8 15 7" opacity=".6" />
-      <path d="M30 45v60" />
-      <path d="M30 72c-10-3-15-11-13-18 8 1 13 8 13 18Zm0 18c10-3 14-11 12-18-8 1-12 8-12 18Z" />
-    </Svg>
-  );
-}

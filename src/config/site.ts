@@ -1,13 +1,13 @@
 /**
  * ONE FILE TO EDIT.
  * Every personal detail and every word on the page lives here: names, date, place,
- * your note, the menu options and her cheeky reactions, button labels, thank-you
+ * your note, the pickup times, button labels, thank-you
  * messages, phone number. Nothing in /components needs to be touched.
  *
  * After editing, run `npm run og` to regenerate the share preview image
  * (public/og.jpg) with her name on it.
  *
- * Placeholders you can use in any string: {her} {you} {when} {where} {menu}
+ * Placeholders you can use in any string: {her} {you} {when} {where} {date} {pickup}
  */
 
 export type Choice = 'yes' | 'obviously';
@@ -30,7 +30,8 @@ export const site = {
 
   restaurant: {
     name: 'Mila Kitchen & Cocktail Bar',
-    address: 'Akoka, Lagos Mainland',
+    area: 'Akoka',
+    address: 'Lagos Mainland',
   },
 
   /** Step 1: the reservation card on the dark opening screen. */
@@ -56,30 +57,28 @@ export const site = {
     lines: [
       'I have been thinking about a table for two, a candle, and you sitting across from me.',
       'So I made a reservation. It is the best table in the house, and it has your name on it.',
-      'But first, my queen, I need your help. Every good dinner starts with a menu, and I want this one to be yours.',
+      'But first, my queen, I need your help with one small detail of the plan.',
     ],
     signoff: 'Yours, {you}',
-    next: 'Build our menu',
+    next: 'Continue',
   },
 
   /**
-   * Step 4: she builds her order from the real menu (the dishes live in config/menu.ts).
-   * Set showPrices to true to show ₦ prices on the cards, in the order sheet and on the ticket.
+   * Step 4: she picks a pickup time. `time` is 24h HH:mm on the dinner date above;
+   * `reaction` is the mascot's cheeky line when she taps it.
    */
-  menu: {
-    showPrices: false,
-    title: 'Build your plate 🍽️',
-    subtitle: 'Tap what you like. Swipe for more.',
-    surpriseLabel: 'Surprise me 👀',
-    decideLabel: 'I’ll decide there',
-    orderPill: '{her}’s order ({n})',
-    sheetTitle: 'Your order',
-    sheetEmpty: 'Nothing yet. Tap something yummy.',
-    sheetBack: 'Keep browsing',
-    remove: 'Remove',
-    total: 'Total',
-    done: 'That’s my order',
-    limitWarning: 'That’s the limit! Tap one to swap.',
+  pickup: {
+    title: 'When should I pick you up?',
+    subtitle: 'Pick a time. I will be on time, promise.',
+    next: 'Confirm our date',
+    options: [
+      { time: '17:30', reaction: 'Super early. Traffic-proof, smart queen 🚗' },
+      { time: '18:00', reaction: 'Perfect. Plenty of time to look amazing ✨' },
+      { time: '18:15', reaction: 'A quarter past six. Precise. I like it.' },
+      { time: '18:30', reaction: 'Just right. Not early, not late 😌' },
+      { time: '18:45', reaction: 'Cutting it close. I like a little drama 😏' },
+      { time: '19:00', reaction: 'Living dangerously, my queen. Traffic is watching 👀' },
+    ],
   },
 
   /** Step 5: the big question. */
@@ -97,37 +96,35 @@ export const site = {
     obviously: 'I knew you had great taste, my queen.',
   } satisfies Record<Choice, string>,
 
-  /** Step 6: the confirmation card. */
+  /** Step 6: the confirmation ticket. */
   confirm: {
     eyebrow: 'Date confirmed 💌',
-    /** A little ink stamp that thumps onto the card. */
-    stamp: 'Approved',
     guestLabel: 'Guest',
-    partyLabel: 'Party',
     party: 'Table for two',
     dateLabel: 'Date',
-    timeLabel: 'Time',
+    pickupLabel: 'Pickup',
+    dinnerLabel: 'Dinner',
     whereLabel: 'Where',
-    menuLabel: 'Your order',
     calendar: 'Add to calendar',
     tell: 'Send to {you}',
     closing: 'See you soon.',
+    stamp: 'Approved',
   },
 
   /** Digits only, with country code, no + or spaces. 15555550123 is a dummy number. */
   whatsapp: {
     number: '15555550123',
-    /** Placeholders: {her} {when} {where} {menu} */
+    /** Placeholders: {her} {date} {pickup} */
     messages: {
-      yes: 'Yes 🥂 I’m in!\n\n📅 {when}\n📍 {where}, Akoka\n\nMy order:\n{menu}',
-      obviously: 'Obviously yes 😌\n\n📅 {when}\n📍 {where}, Akoka\n\nMy order:\n{menu}',
+      yes: 'Yes 🥂 I’m in!\n\n📅 {date}\n🕒 Pick me up at {pickup}',
+      obviously: 'Obviously yes 😌\n\n📅 {date}\n🕒 Pick me up at {pickup}',
     } satisfies Record<Choice, string>,
   },
 
   /** Wording inside the calendar file she downloads. */
   calendar: {
     title: 'Dinner with {you} 🕯️',
-    description: 'A table for two at {where}. Her order: {menu}',
+    description: 'Pickup at {pickup}. Dinner at {time}, a table for two at {where}.',
     reminderSameDay: 'Dinner tonight',
     reminderDayBefore: 'Dinner tomorrow',
   },
@@ -169,12 +166,22 @@ export const derived = {
     .toLowerCase(),
 };
 
-/** Fill {you}, {her}, {when}, {where} (and {menu} / {n} / {total} when given) in any config string. */
+/** "6:30pm" for a 24h "18:30" on the dinner date. */
+export function clock(hhmm: string): string {
+  const [h, m] = hhmm.split(':').map(Number);
+  const d = new Date(site.dateTime);
+  d.setHours(h, m, 0, 0);
+  return new Intl.DateTimeFormat(site.locale, { hour: 'numeric', minute: '2-digit', hour12: true }).format(d).replace(/\s/g, '').toLowerCase();
+}
+
+/** Fill {you}, {her}, {when}, {where}, {date}, {time} (and {pickup} etc. when given) in any config string. */
 export function fill(text: string, extra: Record<string, string | number> = {}): string {
   let out = text
     .replaceAll('{you}', site.yourName)
     .replaceAll('{her}', site.herName)
     .replaceAll('{when}', `${derived.dateLong}, ${derived.time}`)
+    .replaceAll('{date}', derived.dateLong)
+    .replaceAll('{time}', derived.time)
     .replaceAll('{where}', site.restaurant.name);
   for (const [k, v] of Object.entries(extra)) out = out.replaceAll(`{${k}}`, String(v));
   return out;

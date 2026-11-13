@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m } from 'framer-motion';
-import { fill, site, type Choice } from './config/site';
-import { orderText, type Order } from './config/menu';
+import { clock, fill, site, type Choice } from './config/site';
 import { getTier } from './lib/capabilities';
 import { burstPetals } from './lib/petals';
 import { notifyAnswer } from './lib/share';
@@ -11,14 +10,14 @@ import { MusicToggle } from './components/ui/MusicToggle';
 import { Arrival } from './components/sections/Arrival';
 import { Candle } from './components/sections/Candle';
 import { Note } from './components/sections/Note';
-import { MenuBuilder } from './components/sections/MenuBuilder';
+import { Pickup } from './components/sections/Pickup';
 import { Question } from './components/sections/Question';
 import { Confirmed } from './components/sections/Confirmed';
 
-type Step = 'arrival' | 'candle' | 'note' | 'menu' | 'question' | 'done';
-const steps: Step[] = ['arrival', 'candle', 'note', 'menu', 'question', 'done'];
+type Step = 'arrival' | 'candle' | 'note' | 'pickup' | 'question' | 'done';
+const steps: Step[] = ['arrival', 'candle', 'note', 'pickup', 'question', 'done'];
 
-/** Where to start: a saved answer jumps straight to the confirmation; ?step=note etc. is handy for previewing. */
+/** Where to start: a saved answer jumps straight to the confirmation; ?step=pickup etc. is handy for previewing. */
 function initial(saved: ReturnType<typeof loadState>): { step: Step; answer: Choice | null } {
   const q = new URLSearchParams(location.search).get('step') as Step | null;
   if (q && steps.includes(q)) return { step: q, answer: q === 'done' ? (saved.answer ?? 'yes') : saved.answer };
@@ -33,23 +32,26 @@ export function App() {
   const [start] = useState(() => initial(saved));
   const [step, setStep] = useState<Step>(start.step);
   const [answer, setAnswer] = useState<Choice | null>(start.answer);
-  const [order, setOrder] = useState<Order>(saved.order);
+  const [pickup, setPickup] = useState<string | null>(saved.pickup);
   const [fresh, setFresh] = useState(false);
   // the room is dark until the candle is lit; later screens (or a returning visit) start already lit
   const [lit, setLit] = useState(steps.indexOf(start.step) > 1);
 
   const next = useCallback(() => setStep((s) => steps[Math.min(steps.indexOf(s) + 1, steps.length - 1)]), []);
 
-  const changeOrder = (o: Order) => {
-    setOrder(o);
-    saveState({ answer, order: o });
+  const changePickup = (t: string) => {
+    setPickup(t);
+    saveState({ answer, pickup: t });
   };
+
+  // a visitor who jumps straight to the end (?step=done) still gets a sensible time
+  const chosen = pickup ?? site.pickup.options[0].time;
 
   const answerNow = (c: Choice) => {
     setAnswer(c);
     setFresh(true);
-    saveState({ answer: c, order });
-    notifyAnswer(c, orderText(order));
+    saveState({ answer: c, pickup: chosen });
+    notifyAnswer(c, clock(chosen));
     if (!reduced) burstPetals(() => {});
     if (navigator.vibrate) navigator.vibrate(20);
     setStep('done');
@@ -80,15 +82,17 @@ export function App() {
               <span className="h-10 w-10" aria-hidden />
               <AnimatePresence>
                 {step !== 'arrival' && (
-                  <m.p
-                    key="label"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1.4 }}
-                    className={`text-[10px] uppercase tracking-[0.42em] transition-colors duration-[2400ms] ${dark ? 'text-gold-300/80' : 'text-gold-600'}`}
-                  >
-                    {fill(site.arrival.headerLabel)}
-                  </m.p>
+                  <m.div key="label" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.4 }} className="flex flex-col items-center gap-1.5">
+                    <p className={`text-[10px] uppercase tracking-[0.42em] transition-colors duration-[2400ms] ${dark ? 'text-gold-300/80' : 'text-gold-600'}`}>{fill(site.arrival.headerLabel)}</p>
+                    {/* step indicator: candle, note, pickup, question */}
+                    <div className="flex h-1.5 items-center gap-1.5" aria-hidden>
+                      {(['candle', 'note', 'pickup', 'question'] as Step[]).map((st) => {
+                        const idx = steps.indexOf(st);
+                        const cur = steps.indexOf(step);
+                        return <span key={st} className={`h-1.5 rounded-full transition-all duration-700 ${cur === idx ? `w-5 ${dark ? 'bg-gold-300' : 'bg-ruby-600'}` : `w-1.5 ${cur > idx ? (dark ? 'bg-gold-300/60' : 'bg-ruby-600/50') : dark ? 'bg-gold-300/25' : 'bg-ink/20'}`}`} />;
+                      })}
+                    </div>
+                  </m.div>
                 )}
               </AnimatePresence>
               {site.music.enabled ? <MusicToggle tone={dark ? 'dark' : 'light'} /> : <span className="h-10 w-10" aria-hidden />}
@@ -102,14 +106,14 @@ export function App() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
                   transition={{ duration: 0.8, ease: [0.22, 0.61, 0.36, 1] }}
-                  className={`mx-auto flex min-h-full w-full max-w-md flex-col items-center ${step === 'menu' ? 'justify-start' : 'justify-center px-5 pb-8 pt-2'}`}
+                  className="mx-auto flex min-h-full w-full max-w-md flex-col items-center justify-center px-5 pb-8 pt-2"
                 >
                   {step === 'arrival' && <Arrival onNext={next} reduced={reduced} />}
                   {step === 'candle' && <Candle lit={lit} onLight={() => setLit(true)} onNext={next} reduced={reduced} />}
                   {step === 'note' && <Note onNext={next} reduced={reduced} />}
-                  {step === 'menu' && <MenuBuilder order={order} onChange={changeOrder} onNext={next} reduced={reduced} />}
+                  {step === 'pickup' && <Pickup value={pickup} onChange={changePickup} onNext={next} reduced={reduced} />}
                   {step === 'question' && <Question onAnswer={answerNow} reduced={reduced} />}
-                  {step === 'done' && answer && <Confirmed choice={answer} order={order} reduced={reduced} fresh={fresh} />}
+                  {step === 'done' && answer && <Confirmed choice={answer} pickup={chosen} reduced={reduced} fresh={fresh} />}
                 </m.div>
               </AnimatePresence>
             </main>
