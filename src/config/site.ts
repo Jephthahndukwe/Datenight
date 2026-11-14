@@ -23,7 +23,7 @@ export const site = {
    * Local date and time of the dinner, as YYYY-MM-DDTHH:mm (no timezone, so it
    * lands at the same wall-clock time wherever her phone is).
    */
-  dateTime: '2026-11-28T19:30',
+  dateTime: '2026-12-05T19:30',
   durationMinutes: 150,
   /** BCP 47 locale used to format the date for display. */
   locale: 'en-GB',
