@@ -62,7 +62,7 @@ export const site = {
       'You said yes, and I have been grinning at my screen like a fool ever since.',
       'Thank you for giving me an evening of your time. I promise to make every minute of it worth it.',
       'I am looking forward to your laugh, to long conversations that make us forget the time, and to watching you walk in, my queen, looking exactly like yourself.',
-      'Wear something that makes you feel wonderful. I will be the one trying not to stare 😏',
+      'Wear something that makes you feel wonderful and sexy. I will be the one trying not to stare 😏',
     ],
     signoff: 'Yours, {you}',
     skipHint: 'tap to skip the typing',
