@@ -1,12 +1,10 @@
 import { useCallback, useState } from 'react';
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m } from 'framer-motion';
-import { site } from './config/site';
 import { getTier } from './lib/capabilities';
 import { burstPetals } from './lib/petals';
 import { notifyAccepted } from './lib/share';
 import { loadAccepted, saveAccepted } from './lib/storage';
 import { Bokeh } from './components/ui/Bokeh';
-import { MusicToggle } from './components/ui/MusicToggle';
 import { Envelope } from './components/sections/Envelope';
 import { Question } from './components/sections/Question';
 import { Celebrate } from './components/sections/Celebrate';
@@ -43,7 +41,6 @@ export function App() {
     setStep('celebrate');
   };
 
-  const dark = !lit;
   const origin = '50% 40%';
 
   return (
@@ -65,7 +62,6 @@ export function App() {
 
           <div className="relative z-10 flex h-full flex-col">
             <header className="flex h-14 shrink-0 items-center justify-end px-3 pt-[env(safe-area-inset-top)]">
-              {site.music.enabled && <MusicToggle tone={dark ? 'dark' : 'light'} />}
             </header>
 
             <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">

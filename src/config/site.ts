@@ -108,14 +108,6 @@ export const site = {
     endpoint: '/api/notify',
   },
 
-  /** Optional music. Drop your own mp3 at /public/audio/dinner.mp3 to replace the synthesised placeholder. */
-  music: {
-    enabled: true,
-    label: 'Music',
-    src: '/audio/dinner.mp3',
-    volume: 0.4,
-  },
-
   /** Used for og:url / og:image if Vercel's production URL is not available at build. */
   siteUrl: 'https://your-site.vercel.app',
 } as const;

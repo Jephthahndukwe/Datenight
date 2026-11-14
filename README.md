@@ -16,7 +16,7 @@ If she comes back after saying yes, the page opens straight on the ticket. Add `
 
 ### The runaway No
 
-The No button cannot be tapped. It leaps away on `pointerdown` / `touchstart` (before a click can register, and the click handler never fires), on keyboard focus, and, on desktop, as soon as the cursor gets within about 100px. Every landing spot is fully inside the screen and its safe areas, below the header (so never on the music button), and clear of the Yes button, the sign, the mascot and the line under it. It moves with a quick spring, and the Yes button grows and glows a little more each time. With each escape the mascot goes from pleading, to sweating, to dramatic crying, and a new line appears under the sign. There are 580 different lines in `src/config/noLines.ts`: the first seven play in order (the classic "Are you sure?" build-up), then the rest are shuffled, and reshuffled if she somehow gets through them all, so it never runs out and never repeats back to back. Add or edit lines freely in that file. It sits in an empty slot at first, so nothing shifts when it leaves. Reduced motion: it still escapes, but with an instant jump.
+The No button cannot be tapped. It leaps away on `pointerdown` / `touchstart` (before a click can register, and the click handler never fires), on keyboard focus, and, on desktop, as soon as the cursor gets within about 100px. Every landing spot is fully inside the screen and its safe areas, below the header , and clear of the Yes button, the sign, the mascot and the line under it. It moves with a quick spring, and the Yes button grows and glows a little more each time. With each escape the mascot goes from pleading, to sweating, to dramatic crying, and a new line appears under the sign. There are 580 different lines in `src/config/noLines.ts`: the first seven play in order (the classic "Are you sure?" build-up), then the rest are shuffled, and reshuffled if she somehow gets through them all, so it never runs out and never repeats back to back. Add or edit lines freely in that file. It sits in an empty slot at first, so nothing shifts when it leaves. Reduced motion: it still escapes, but with an instant jump.
 
 ## 1. Make it yours (one file)
 
@@ -30,7 +30,6 @@ Edit **`src/config/site.ts`**. Nothing in `components/` needs touching. Every wo
 | `celebrate`, `note` | Celebration text and your letter (it is typed out line by line; use `{her}` and `{you}`) |
 | `confirm`, `calendar`, `whatsapp` | Ticket labels, calendar wording and the WhatsApp message (`{date}`, `{time}`) |
 | `notify.enabled` | Email-me-when-she-answers (see below) |
-| `music` | On or off, volume, file path |
 
 The mascot is a small candle flame (`MascotArt` in `components/ui/Illustrations.tsx`).
 
@@ -49,11 +48,7 @@ npm run dev        # http://localhost:5173
 npm run build && npm run preview
 ```
 
-## 3. Music
-
-`public/audio/dinner.mp3` is a short loop of a fingerpicked guitar progression, synthesised by `scripts/make-music.mjs` (`npm run music`, needs ffmpeg). It is original, so there is nothing to license. Replace it with any royalty-free track by dropping a file at the same path (or change `music.src`). It is off by default and only starts after she taps the small music button in the top corner, which lives in its own header strip and never sits on top of content.
-
-## 4. Optional: email when she answers (Resend)
+## 3. Optional: email when she answers (Resend)
 
 `api/notify.ts` is a tiny Vercel function that calls Resend. Set these in **Vercel → Project → Settings → Environment Variables**:
 
@@ -91,10 +86,10 @@ src/
   config/site.ts          every word and detail
   components/
     sections/             Envelope, Question, Celebrate, Note, Confirmed
-    ui/                   Illustrations (mascot), RunawayButton, Button, Bokeh, Ornament, MusicToggle
-  lib/                    ics, share, music, storage, petals (canvas)
+    ui/                   Illustrations (mascot), RunawayButton, Button, Bokeh, Ornament, 
+  lib/                    ics, share, storage, petals (canvas)
 api/notify.ts             optional Resend email
-scripts/                  make-og.mjs, make-music.mjs
+scripts/                  make-og.mjs
 ```
 
 ## Motion and accessibility

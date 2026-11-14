@@ -4,7 +4,7 @@ import { animate, m, useMotionValue } from 'framer-motion';
 
 type Rect = { l: number; t: number; r: number; b: number };
 
-const HEADER = 64; // the header strip (music toggle lives here): never a landing spot
+const HEADER = 64; // the header strip: never a landing spot
 const MARGIN = 14;
 const CLEARANCE = 20; // breathing room around things it must not touch
 
