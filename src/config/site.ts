@@ -83,9 +83,9 @@ export const site = {
     stamp: 'Approved',
   },
 
-  /** Digits only, with country code, no + or spaces. 15555550123 is a dummy number. */
+  /** Digits only, with country code, no + or spaces. Your number: +234 906 893 7365. */
   whatsapp: {
-    number: '15555550123',
+    number: '2349068937365',
     /** Placeholders: {her} {date} {time} */
     message: 'Yes 💖 I’m in!\n\n📅 {date}\n🕖 {time}',
   },
