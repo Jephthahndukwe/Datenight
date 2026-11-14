@@ -28,6 +28,12 @@ export const site = {
   /** BCP 47 locale used to format the date for display. */
   locale: 'en-GB',
 
+  /**
+   * After she says yes, a reload within this many hours reopens on the ticket.
+   * After that the invitation starts again from the envelope.
+   */
+  rememberHours: 24,
+
   /** Step 1: the envelope. */
   envelope: {
     to: 'For {her}',
